@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Tomi Magici</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f4e8d3;
+            background-image: radial-gradient(#d3c1a3 15%, transparent 16%), radial-gradient(#d3c1a3 15%, transparent 16%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #2c1a16;
+            font-family: 'Crimson Text', serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            
+            /* Le regole per centrare perfettamente tutto nello schermo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centra verticalmente */
+            min-height: 95vh;
+        }
+
+        .container {
+            max-width: 600px;
+            background: #fffdf7;
+            padding: 30px;
+            border: 2px solid #8b5a2b;
+            border-radius: 8px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            
+            /* Animazione fluida quando il blocco cambia dimensione per il sigillo */
+            transition: all 0.4s ease-in-out;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #5c1818;
+            margin-top: 0;
+        }
+
+        button {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #5c1818;
+            color: #f4e8d3;
+            border: 2px solid #2c1a16;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 20px 0;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #8b2b2b;
+        }
+
+        #risultato {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            min-height: 100px;
+            margin-top: 20px;
+            padding: 15px;
+            border-top: 1px dashed #8b5a2b;
+            font-style: italic;
+        }
+
+        .sezione-sigillo {
+            margin-top: 20px;
+            display: none; 
+        }
+
+        .sezione-sigillo p {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            color: #5c1818;
+            font-size: 1.1rem;
+        }
+
+        .immagine-tomo {
+            max-width: 150px;
+            border-radius: 50%; 
+            background-color: #e8dcc4;
+            border: 4px solid #8b5a2b;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Archivio dei Tomi Perduti</h1>
+        <p>Genera un libro misterioso per la tua campagna di D&D.</p>
+        
+        <button onclick="generaLibro()">Rivela un Tomo</button>
+        
+        <div id="risultato">Le antiche mensole sono silenziose...</div>
+        
+        <!-- Immagine del Sigillo del Libro -->
+        <div id="sezioneSigillo" class="sezione-sigillo">
+            <p>Il sigillo magico sulla copertina:</p>
+            <img id="immagineGenerata" class="immagine-tomo" src="" alt="Sigillo del Tomo">
+        </div>
+    </div>
+
+    <script>
+          const titoli = [
+            // Magici (Generano Sigillo)
+            { testo: "Trattato sulle Aberrazioni Minori", magico: true },
+            { testo: "Grimorio di Klaus", magico: true },
+            { testo: "Guida Esoterica per Reietti", magico: true },
+            { testo: "Kiarellonomicon", magico: true },
+            { testo: "Come Stringere Patti Senza Perdere l'Anima", magico: true },
+            { testo: "Canti Proibiti del Piano Astrale", magico: true },
+            { testo: "Evocazioni Pratiche per Principianti", magico: true },
+            { testo: "Il Libro delle Ceneri Sussurranti", magico: true },
+            { testo: "Geometrie Non Euclidee del Sottosuolo", magico: true },
+            { testo: "Compendio dei Demoni Minori", magico: true },
+            { testo: "Tomo del Gelo Eterno", magico: true },
+            { testo: "Le Undici Maledizioni di Vecna", magico: true },
+            { testo: "Specchi e Illusioni: Un'Analisi", magico: true },
+            { testo: "Rituali di Sangue Dimenticati", magico: true },
+            { testo: "Il Codice d'Ossidiana", magico: true },
+            { testo: "Sinfonia delle Anime Perdute", magico: true },
+            { testo: "Orologeria Arcana", magico: true },
+            { testo: "L'Arte della Trasmutazione Rapida", magico: true },
+            { testo: "Manuale del Perfetto Lich", magico: true },
+            { testo: "Costrutti e Golem: Manutenzione", magico: true },
+            { testo: "Divinazione Tramite le Ossa", magico: true },
+            { testo: "Il Libro dei Cento Occhi", magico: true },
+            { testo: "Tomo delle Fiamme Danzanti", magico: true },
+            { testo: "Parole di Potere Draconico", magico: true },
+            { testo: "I Segreti del Piano delle Ombre", magico: true },
+            { testo: "Mappatura dei Portali Dimensionali", magico: true },
+            { testo: "Astrologia e Destino Arcato", magico: true },
+            { testo: "Guida ai Famigli Esotici", magico: true },
+            { testo: "Cronache del Vuoto", magico: true },
+            { testo: "Tessitura di Incantesimi Elfici", magico: true },
+            { testo: "Il Grimorio Senza Nome", magico: true },
+            { testo: "Magia del Sangue per Curatori", magico: true },
+            { testo: "Dizionario Abissale-Comune", magico: true },
+            { testo: "Sussurri del Reame Fatato", magico: true },
+            { testo: "Il Tomo Rovesciato", magico: true },
+            { testo: "Controllo Mentale e Etica", magico: true },
+            { testo: "La Runa Fratturata", magico: true },
+            { testo: "Incanti di Difesa Assoluta", magico: true },
+            { testo: "Evocazione Elementale Avanzata", magico: true },
+            { testo: "Il Canto della Sirena Impalata", magico: true },
+            { testo: "Voci Oltre il Velo", magico: true },
+            { testo: "Magia Temporale: Avvertenze", magico: true },
+            { testo: "Il Respiro del Leviatano", magico: true },
+            { testo: "Manoscritto delle Nubi Tossiche", magico: true },
+            { testo: "Sigilli di Contenimento Infallibili", magico: true },
+            { testo: "L'Occhio del Ciclone Arcato", magico: true },
+            { testo: "Guida alla Sopravvivenza nei Piani", magico: true },
+            { testo: "Il Lamento del Paladino Caduto", magico: true },
+            { testo: "Basi di Necromanzia Conservativa", magico: true },
+            { testo: "Il Tomo d'Argento di Mystra", magico: true },
+            { testo: "Illusioni Tattili", magico: true },
+            { testo: "Appunti di un Artefice Pazzo", magico: true },
+            { testo: "La Mente dell'Illithid", magico: true },
+            { testo: "Metamagia Spontanea", magico: true },
+            { testo: "Il Cuore della Forgia", magico: true },
+            { testo: "Luce e Ombra: Dualità Arcana", magico: true },
+            
+            // Mondani/Narrativi (Non generano Sigillo)
+            { testo: "Il Ricettario dei Funghi Senzienti", magico: false },
+            { testo: "Diario dei Sogni di un Beholder", magico: false },
+            { testo: "Anatomia dei Mimic", magico: false },
+            { testo: "Tassazione e Leggi di Waterdeep", magico: false },
+            { testo: "Guida Botanica alle Piante Velenose", magico: false },
+            { testo: "Raccolta di Poesie Goblinoide", magico: false },
+            { testo: "Manutenzione delle Armature a Piastre", magico: false },
+            { testo: "Storia delle Guerre Naniche", magico: false },
+            { testo: "Diario di Bordo del Capitano Arcus", magico: false },
+            { testo: "Canti da Taverna Non Censurati", magico: false },
+            { testo: "Il Perfetto Mercante", magico: false },
+            { testo: "Trattato sull'Agricoltura in Montagna", magico: false },
+            { testo: "Igiene Personale nei Dungeon", magico: false },
+            { testo: "Guida Turistica della Costa della Spada", magico: false },
+            { testo: "Lettere d'Amore di un Orco", magico: false },
+            { testo: "Come Cucinare il Ratto Mannaro", magico: false },
+            { testo: "Studio sul Comportamento dei Coboldi", magico: false },
+            { testo: "Manuale di Sopravvivenza nei Boschi", magico: false },
+            { testo: "Censimento Nobiliare del 1480", magico: false },
+            { testo: "Trattato di Architettura Gnomica", magico: false },
+            { testo: "Racconti per Bambini Tiefling", magico: false },
+            { testo: "Registro delle Taglie Riscosse", magico: false },
+            { testo: "Guida alla Fermentazione della Birra Nera", magico: false },
+            { testo: "Storie di Fantasmi per Marinai", magico: false }
+        ];
+
+        const aspetti = [
+            "È rilegato in muta di serpente",
+            "Ha le pagine che sembrano evanescenti, come fatte di nebbia scura ma palpabile",
+            "Presenta un inchiostro che emana un colore cobalto brillante e luminoso",
+            "È chiuso da un lucchetto che prova a morderti quando avvicini la mano",
+            "È rilegato con spessi fogli di rame sbalzato che scricchiolano quando lo apri",
+            "Ha un occhio di vetro incastonato nella copertina che sbatte le palpebre a intervalli irregolari",
+            "Le sue pagine sono fatte di foglie autunnali conservate magicamente",
+            "È bagnato fradicio e gocciola continuamente acqua di mare, ma le pagine non si rovinano",
+            "Il titolo in copertina cambia lingua ogni volta che lo guardi",
+            "È foderato in velluto rosso che sembra assorbire la luce circostante",
+            "Ha le pagine di pergamena sottilissima, trasparenti come ali di mosca",
+            "È avvolto da catene arrugginite che non possono essere spezzate, solo slegate con pazienza",
+            "La copertina è formata da scaglie di drago nero ancora calde",
+            "Presenta un segnalibro fatto con una lunga treccia di capelli d'argento",
+            "È privo di dorso, le pagine fluttuano tenute insieme da una magia invisibile",
+            "Sembra tagliato a metà da una spada, ma il testo è perfettamente leggibile",
+            "È rilegato in legno marcio coperto di funghi bioluminescenti",
+            "La copertina è uno specchio opaco in cui il tuo riflesso appare invecchiato",
+            "Le parole sono incise a fuoco su sottili lastre di piombo",
+            "Ha i bordi delle pagine affilati come rasoi da barba",
+            "È cucito con tendini animali e la copertina sembra pelle umana tesa",
+            "Un piccolo teschio di corvo fa da pomello per l'apertura",
+            "È completamente bianco all'esterno, senza un granello di polvere",
+            "C'è una serratura magica che richiede una goccia di sangue per aprirsi",
+            "Le pagine sono fatte di ghiaccio flessibile che non si scioglie mai",
+            "Il libro sembra respirare, gonfiandosi e sgonfiandosi leggermente",
+            "È coperto di fango secco che cade a pezzi se lo scuoti",
+            "È rilegato in una strana lega metallica che ronza leggermente",
+            "Le sue pagine sono fatte di seta ricamata d'oro",
+            "La copertina è formata da un guscio di tartaruga gigante",
+            "Il testo è scritto con un inchiostro che brilla di luce violacea al buio",
+            "È chiuso da una cinghia di cuoio con una fibbia a forma di demone",
+            "Ha minuscoli insetti dorati morti pressati tra le pagine",
+            "Il libro è insolitamente pesante, come se fosse pieno di roccia",
+            "Le lettere sulla copertina si riorganizzano a formare anagrammi inquietanti",
+            "È racchiuso in una teca di cristallo incrinata",
+            "Le pagine sono grigie, scritte con inchiostro di cenere",
+            "Un intricato rosone di vetro colorato adorna il centro del tomo",
+            "È protetto da una fodera di cuoio consumato da innumerevoli viaggi",
+            "Le cuciture sono fatte di fili di rame elettrizzati",
+            "Ha le dimensioni di un francobollo, leggibile solo con una lente",
+            "È enorme e spesso un palmo, largo quasi come uno scudo",
+            "L'inchiostro rosso vivo sembra non essersi mai asciugato completamente",
+            "È rilegato con frammenti di ossa di goblin",
+            "C'è un grande foro al centro, come se fosse stato trapassato da una lancia",
+            "Le pagine al tatto sembrano pelle viva e morbida",
+            "Un sigillo di cera nera a forma di rosa è impresso sul retro",
+            "È coperto da un sottile strato di brina perenne",
+            "Ha dei campanellini d'argento cuciti al dorso che suonano debolmente",
+            "Il testo è composto da rune che sembrano graffiate con artigli",
+            "La copertina è in marmo scolpito, freddo e liscio",
+            "È avvolto in bende funerarie ingiallite dal tempo",
+            "Ogni pagina ha il profumo di un fiore diverso",
+            "L'interno è pieno di appunti ossessivi scritti ai margini",
+            "È rilegato con squame di pesce iridescente",
+            "Il libro puzza di zolfo e le pagine sono bruciacchiate",
+            "Una fitta ragnatela ricopre l'intera superficie esterna",
+            "Le pagine sono fatte di corteccia d'albero flessibile",
+            "È circondato da un lieve alone di fumo scuro",
+            "Ha due piccole ali piumate sul dorso",
+            "Il testo scorre da destra a sinistra, come in uno specchio",
+            "È rilegato in un metallo iridescente che cambia colore alla luce",
+            "C'è una bussola incastrata nella copertina che punta sempre al libro",
+            "Le pagine sono spesse come cartone e macchiate di vino",
+            "È ricoperto di minuscole spine difensive",
+            "Le lettere sembrano galleggiare un millimetro sopra la carta",
+            "È racchiuso in una busta di pergamena sigillata con il piombo",
+            "Ha un aspetto così anonimo che fai fatica a concentrarti per guardarlo",
+            "È ricamato con stelle d'argento che si muovono lentamente",
+            "C'è una serratura a combinazione con numeri elfici antichi",
+            "Il tomo è coperto di cicatrici rosate",
+            "Le pagine sono fatte di scaglie di mica sottilissima",
+            "Una finta gemma al centro della copertina ti segue come un occhio",
+            "È rilegato con frammenti di un vecchio scudo in legno",
+            "L'inchiostro usato è visibilmente metallico",
+            "Sembra essere stato masticato e sputato da una grande bestia",
+            "È chiuso con tre lucchetti di diversa fattura",
+            "Le pagine emanano un suono simile a foglie calpestate quando vengono girate",
+            "È rilegato in velluto blu notte coperto di polvere di stelle",
+            "Un intricato labirinto è scolpito in bassorilievo sulla fronte"
+        ];
+
+        const dettagli = [
+            "Il libro puzza fortemente di umidità e terra smossa.",
+            "Tra i paragrafi ci sono due occhi ambra disegnati che sembrano seguirti mentre leggi.",
+            "Il grimorio sembra vuoto, leggibile solo con la magia Rivela Intenzioni.",
+            "Secondo antiche leggende, questo tomo doveva essere andato distrutto in un incendio.",
+            "Mentre lo leggi, senti un leggero sapore di cenere e fumo sulla lingua.",
+            "Avvicinando l'orecchio alla copertina, puoi sentire il rumore di una folla che urla in lontananza.",
+            "Il tomo scotta e diventa intollerabilmente caldo se provi a portarlo all'aperto alla luce del sole.",
+            "Appena lo apri, una folata di vento gelido investe la stanza spegnendo le candele.",
+            "Il libro rilascia un leggero profumo di lillà che stranamente calma i battiti del tuo cuore.",
+            "Girando le pagine, la tua ombra sul muro sembra muoversi in ritardo.",
+            "Le illustrazioni nel libro si animano leggermente quando non le fissi direttamente.",
+            "Se lo tieni aperto troppo a lungo, le mosche iniziano ad accumularsi nella stanza.",
+            "Il suono delle pagine che sfregano ricorda il sussurro di due amanti.",
+            "Una piccola scossa elettrica ti pizzica le dita ogni volta che leggi il nome di un demone.",
+            "Sembra assorbire la luce: intorno al libro l'illuminazione si abbassa leggermente.",
+            "Le pagine sono calde come se il libro avesse la febbre.",
+            "C'è una macchia di sangue a pagina 42 che sembra ancora fresca e umida.",
+            "Mentre lo leggi, ti viene una sete improvvisa e inestinguibile.",
+            "Il tuo riflesso sulle parti metalliche del libro ti mostra mentre piangi.",
+            "Lasciato su un tavolo, il libro tende a girarsi impercettibilmente verso Nord.",
+            "Se ci poggi sopra l'orecchio, senti un battito cardiaco debole e lento.",
+            "L'odore che emana cambia a seconda dell'umore di chi lo tiene in mano.",
+            "Ogni volta che chiudi il libro, senti un sospiro di sollievo vicino al tuo orecchio.",
+            "Le parole del libro sembrano scritte con la calligrafia della tua defunta madre.",
+            "Mentre lo leggi, i cani e i gatti nei paraggi iniziano a guaire terrorizzati.",
+            "Il libro vibra leggermente, come le fusa di un grosso felino.",
+            "Se leggi ad alta voce, la tua voce suona innaturalmente profonda.",
+            "Le pagine si bagnano di rugiada se il libro viene lasciato aperto di notte.",
+            "Qualsiasi insetto che si posa sulla copertina muore istantaneamente.",
+            "Se lo stringi forte, ti lascia le mani sporche di una fuliggine che non va via con l'acqua.",
+            "L'aria attorno al libro ha un sapore ferroso, come di sangue appena versato.",
+            "Le illustrazioni dei paesaggi cambiano stagione a seconda di quando lo apri.",
+            "Mentre lo sfogli, senti il vago sapore di acqua di mare in gola.",
+            "Il libro sembra attrarre magneticamente i piccoli oggetti di ferro vicini.",
+            "Se lo metti sotto il cuscino, ti garantisce sogni vividi e lucidi, ma estenuanti.",
+            "Qualsiasi fiamma vicina assume una sfumatura verdastra mentre il libro è aperto.",
+            "Le pagine si rifiutano di strapparsi, anche se tiri con tutta la tua forza.",
+            "Se piangi mentre lo leggi, il libro assorbe le lacrime senza bagnarsi.",
+            "L'odore del tomo ricorda in modo allarmante la pelle bruciata.",
+            "Mentre lo leggi, senti un leggero formicolio alla base del collo.",
+            "Il libro ronza a una frequenza così bassa che fa tremare l'acqua nei bicchieri.",
+            "Se lo lasci in equilibrio sul dorso, non cade mai, sfidando la gravità.",
+            "Le parti vuote della pagina mostrano impronte digitali sporche di fango se inclinate.",
+            "Mentre studi il testo, ti senti costantemente osservato da dietro le spalle.",
+            "Il libro è immune allo sporco: qualsiasi liquido gli scivola via come su un vetro.",
+            "Sotto la copertina sembra scorrere qualcosa di vivo, come vene pulsanti.",
+            "Il testo principale è intervallato da insulti rivolti a un mago chiamato 'Malthus'.",
+            "La rilegatura emette un suono simile a uno scricchiolio d'ossa quando lo apri.",
+            "Se lo tieni in mano, il tuo respiro fa condensa anche se fuori fa caldo.",
+            "Le parole più importanti sono state graffiate via via con rabbia.",
+            "L'odore che sprigiona ricorda quello del pane appena sfornato, ma leggermente stantio.",
+            "Se lo perdi di vista, lo ritrovi sempre spostato di qualche centimetro.",
+            "Qualsiasi cosa tu scriva sulle pagine vuote scompare dopo pochi secondi.",
+            "Il libro sanguina una goccia rossa se cerchi di forzare la serratura.",
+            "Mentre lo leggi, non riesci a percepire nessun altro suono esterno.",
+            "La polvere non si posa mai sulla sua copertina.",
+            "Se fai cadere il libro, non fa alcun rumore colpendo il suolo.",
+            "L'inchiostro odora fortemente di lavanda marcia.",
+            "Le illustrazioni di mostri sembrano guardarti negli occhi.",
+            "Se lo avvicini a uno specchio, il testo riflesso è in un'altra lingua.",
+            "Il peso del tomo sembra raddoppiare se sei arrabbiato.",
+            "Mentre lo sfogli, la temperatura della stanza si abbassa di qualche grado.",
+            "Le pagine emettono una debole luminescenza azzurra nel buio assoluto.",
+            "Se chiudi gli occhi e tocchi il dorso, vedi un cielo stellato alieno.",
+            "Ogni volta che volti pagina, senti il tintinnio di monete lontane.",
+            "Il tomo ha un odore pungente di ozono e temporale imminente.",
+            "Se avvicini un dito alle rune, senti un leggero bruciore.",
+            "L'inchiostro sembra umido e rischi di macchiarti i polpastrelli se sfreghi troppo.",
+            "Se lo sbatti forte sul tavolo, si sente l'eco di una campana.",
+            "Le parti danneggiate del libro sembrano ricrescere lentamente col tempo.",
+            "Mentre lo studi, provi una strana nostalgia per un posto in cui non sei mai stato.",
+            "Il volume emana calore, come una tazza di tè bollente.",
+            "Se lo annusi da vicino, sa di vecchia cantina chiusa da decenni.",
+            "Le ombre create dalle sue pagine aperte hanno forme artigliate.",
+            "Mentre leggi, hai la sensazione che qualcuno stia respirando sul tuo collo.",
+            "Il libro sembra attrarre i piccoli ragni, che vi tessono tele in continuazione.",
+            "Se lo stringi al petto, placa l'ansia e induce una calma innaturale.",
+            "Le macchie d'inchiostro sulle pagine sembrano formare volti disperati.",
+            "Ogni paragrafo inizia con una lettera decorata con un teschio ghignante."
+        ];
+
+        const segreti = [
+            "Vale almeno 50 monete d'oro per un collezionista eccentrico.",
+            "Ha una mappa piegata che indica una direzione, senza specificare se conduca a tesori o pericoli.",
+            "Contiene le tracce di una missione incompiuta che condurrebbe a un artefatto perduto.",
+            "Al suo interno c'è la formula, apparentemente indecifrabile, per una pozione di Lunga Vita.",
+            "Una pagina spessa nasconde lo scompartimento per una chiave di ossidiana.",
+            "Lette ad alta voce, le prime tre righe evocano per errore un famiglio inutile (come un topo calvo) per 24 ore.",
+            "L'ultima pagina è strappata, ma i bordi nascondono il Vero Nome di un demone minore.",
+            "Se dormi tenendolo sotto il cuscino, puoi fare una domanda al precedente proprietario nei tuoi sogni.",
+            "Il libro in realtà è un oggetto senziente molto permaloso che giudica le tue scelte.",
+            "Tra le pagine c'è una lettera di ricatto indirizzata all'attuale Sindaco della città.",
+            "Il tomo contiene una formula per trasformare il piombo in oro, ma richiede un sacrificio.",
+            "Una pagina nasconde un glifo esplosivo difettoso che fa solo uno sbuffo di fumo.",
+            "Vale oltre 500 monete d'oro, ma la gilda dei Maghi locale ti ucciderebbe pur di riaverlo.",
+            "Chiunque finisca di leggerlo subisce una debole maledizione che fa inacidire il vino che beve.",
+            "Custodisce un segnalibro magico che, se strappato, teletrasporta l'utilizzatore a 10 metri di distanza.",
+            "Nasconde la vera identità del re, indicando che è stato sostituito da un doppelganger.",
+            "Contiene uno scomparto vuoto a forma di fiala di veleno.",
+            "Se donato a una biblioteca sacra, l'ordine dei chierici ti garantirà cure gratuite a vita.",
+            "Le pagine contengono le vere istruzioni per disattivare le trappole del Dungeon di Zhal.",
+            "Il tomo garantisce un +1 ai tiri di Storia se consultato per almeno un'ora.",
+            "Rivela l'esatta posizione del tesoro del pirata Ossa-Sanguinanti.",
+            "La lettura completa del testo insegna un trucchetto minore unico: accendere candele schioccando le dita.",
+            "Contiene una banconota fuori corso di un impero caduto, forse preziosa per uno storico.",
+            "Ha un contratto firmato da un Diavolo che scade tra tre giorni esatti.",
+            "Nasconde un incantesimo di illusione che fa apparire il lettore vestito con abiti da nobile.",
+            "Se venduto al mercato nero, attirerà l'attenzione di un culto pericoloso.",
+            "Contiene una lista di nomi: il tuo è l'ultimo in fondo, appena aggiunto.",
+            "Il libro nasconde una piccola fiala piatta contenente le ceneri di un vampiro.",
+            "Spiega come allevare e addomesticare un cucciolo di Drago Ruggine.",
+            "Vi è pressato un fiore raro che funge da antidoto universale se ingerito.",
+            "Le annotazioni a margine descrivono una via segreta per infiltrarsi nel castello del Barone.",
+            "Rivela che una famosa reliquia cittadina è in realtà un falso ben fatto.",
+            "Permette di comprendere un idioma esotico per le 24 ore successive alla lettura.",
+            "Contiene i progetti segreti di una macchina volante gnomica mai costruita.",
+            "Ha un ritratto incredibilmente accurato di uno dei tuoi compagni di gruppo, ma vestito da re.",
+            "Il tomo è foderato con fili d'oro puro, scucibili per ricavarne almeno 30 monete.",
+            "Chi legge il capitolo 7 viene temporaneamente colpito da sordità per un'ora.",
+            "Custodisce un anello di ferro nero che emette un suono quando i goblin sono vicini.",
+            "Contiene la ricetta segreta della famosa birra di Montefiamma, che vale una fortuna per un oste.",
+            "Nelle note a margine c'è la confessione di un omicidio irrisolto di dieci anni fa.",
+            "Il libro attira i topi; se tenuto nello zaino, le tue razioni verranno divorate più in fretta.",
+            "Chi possiede il libro diventa inspiegabilmente avaro e protettivo nei suoi confronti.",
+            "Tra le pagine è schiacciata una scaglia di drago d'oro che brilla ancora di magia residua.",
+            "Contiene il testamento olografo di un nobile senza eredi legittimi.",
+            "Nasconde un indovinello che, se risolto ad alta voce, fa aprire uno scomparto magico nel dorso.",
+            "Rivela il punto debole di una creatura boss che il gruppo dovrà affrontare presto.",
+            "Il libro ha il potere di trasformarsi in un comune mattone di argilla per nascondersi.",
+            "Contiene una serie di coordinate nautiche che puntano verso un'isola che non è sulle mappe.",
+            "La sua copertina può essere rimossa e usata come uno scudo leggero magico in emergenza.",
+            "Se bruciato, le ceneri guariscono istantaneamente ogni malattia.",
+            "Vale poche monete, ma un demone offre favori pur di vederlo distrutto.",
+            "Al suo interno si trova una moneta d'argento con due teste, truccata magicamente.",
+            "Lette con attenzione, le parole insegnano come resistere un po' di più al freddo estremo.",
+            "Nasconde la lista dei membri di una gilda di ladri locale, con i loro indirizzi.",
+            "Il libro stesso funziona come un focus arcano perfetto per un Mago.",
+            "C'è un contratto matrimoniale vincolante firmato in bianco da un duca potente.",
+            "Le pagine fungono da mappa stellare per orientarsi in qualsiasi parte del mondo, anche senza cielo.",
+            "Chi lo legge si accorge che il testo sta raccontando le gesta del gruppo in tempo reale.",
+            "Tra le pagine è nascosto un capello di banshee, utile per potenti pozioni oscure.",
+            "Rivela un incantesimo perduto per purificare istantaneamente l'acqua di un intero lago.",
+            "Contiene una serie di ricevute che incastrano un chierico rispettabile per truffa.",
+            "Ha un minuscolo foro nel dorso in cui soffiare per usarlo come fischietto scaccia-cani.",
+            "Il libro garantisce visioni del futuro se lasciato aperto durante un'eclissi.",
+            "Nasconde un patto di non aggressione tra una città umana e un clan di orchi, ignorato da tutti.",
+            "Valutato da un esperto, scopriresti che l'inchiostro è sangue di elfo reale.",
+            "Contiene una maledizione silente: ogni notte ruba un'ora di riposo a chi lo possiede.",
+            "Il libro ha la capacità di copiare al suo interno qualsiasi testo su cui venga appoggiato.",
+            "C'è un pugnale da lancio piatto nascosto perfettamente nella rilegatura spessa.",
+            "Custodisce una ricetta per una pittura di guerra che rende invisibili agli scuri.",
+            "Leggendolo impari il nome del vero amore di uno dei tuoi compagni di avventura.",
+            "Contiene uno schizzo della fortezza nemica con i turni delle guardie appuntati.",
+            "Ha la strana proprietà di assorbire l'acqua, asciugando la stanza in cui si trova.",
+            "Nasconde una lente magica che, se usata, rivela scritte invisibili ovunque.",
+            "Vale 100 monete di platino, ma solo per la setta dell'Occhio Cieco.",
+            "Al suo interno è stata ricavata una piccola scatola armonica a manovella che suona una ninnananna.",
+            "Contiene l'albero genealogico che prova che il Re attuale è un usurpatore.",
+            "Spiega come invocare il nome di un Diavolo per stipulare un singolo, piccolo accordo favorevole.",
+            "C'è una piuma di fenice pressata tra le pagine centrali, che emana un vago tepore.",
+            "Se venduto in una città elfica, saresti trattato come un eroe cittadino.",
+            "Rivela che la campagna che state giocando è, in realtà, la fantasia di un dio annoiato."
+        ];
+
+        function scegliCasuale(lista) {
+            const indice = Math.floor(Math.random() * lista.length);
+            return lista[indice];
+        }
+
+        function generaLibro() {
+            const titolo = scegliCasuale(titoli);
+            const aspetto = scegliCasuale(aspetti);
+            const dettaglio = scegliCasuale(dettagli);
+            const segreto = scegliCasuale(segreti);
+
+            let descrizione = `Hai trovato "<strong>${titolo.testo}</strong>". ${aspetto}. ${dettaglio} ${segreto}`;
+            document.getElementById('risultato').innerHTML = descrizione;
+
+            const sezioneSigillo = document.getElementById('sezioneSigillo');
+            const imgElement = document.getElementById('immagineGenerata');
+
+            if (titolo.magico === true) {
+                const titoloSenzaSpazi = titolo.testo.replace(/\s+/g, '');
+                const numeroCasuale = Math.floor(Math.random() * 100000);
+                
+                const urlSigillo = `https://api.dicebear.com/7.x/shapes/svg?seed=${titoloSenzaSpazi}${numeroCasuale}&backgroundColor=transparent`;
+
+                imgElement.src = urlSigillo;
+                sezioneSigillo.style.display = "block";
+            } else {
+                sezioneSigillo.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
