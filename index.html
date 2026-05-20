@@ -17,24 +17,22 @@
             text-align: center;
             margin: 0;
             padding: 20px;
-            
-            /* Le regole per centrare perfettamente tutto nello schermo */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centra verticalmente */
-            min-height: 95vh;
+            justify-content: center;
+            min-height: 100vh;
         }
 
+        /* Container allargato per accogliere bene il nuovo layout */
         .container {
-            max-width: 600px;
+            width: 100%;
+            max-width: 700px;
             background: #fffdf7;
             padding: 30px;
             border: 2px solid #8b5a2b;
             border-radius: 8px;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
-            
-            /* Animazione fluida quando il blocco cambia dimensione per il sigillo */
             transition: all 0.4s ease-in-out;
         }
 
@@ -42,9 +40,10 @@
             font-family: 'Cinzel', serif;
             color: #5c1818;
             margin-top: 0;
+            margin-bottom: 5px;
         }
 
-        button {
+        button.genera-btn {
             font-family: 'Cinzel', serif;
             font-size: 1.2rem;
             font-weight: bold;
@@ -58,22 +57,23 @@
             transition: 0.3s;
         }
 
-        button:hover {
+        button.genera-btn:hover {
             background-color: #8b2b2b;
         }
 
+        /* Riquadro risultato principale */
         #risultato {
             font-size: 1.3rem;
             line-height: 1.6;
-            min-height: 100px;
-            margin-top: 20px;
+            min-height: 80px;
+            margin-top: 10px;
             padding: 15px;
             border-top: 1px dashed #8b5a2b;
             font-style: italic;
         }
 
         .sezione-sigillo {
-            margin-top: 20px;
+            margin-top: 15px;
             display: none; 
         }
 
@@ -82,10 +82,11 @@
             font-weight: bold;
             color: #5c1818;
             font-size: 1.1rem;
+            margin-bottom: 10px;
         }
 
         .immagine-tomo {
-            max-width: 150px;
+            max-width: 130px;
             border-radius: 50%; 
             background-color: #e8dcc4;
             border: 4px solid #8b5a2b;
@@ -93,24 +94,85 @@
             padding: 10px;
         }
 
-        .footer-crediti {
+        /* --- NUOVO: SEZIONE STORICO --- */
+        .sezione-storico {
             margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px double #8b5a2b;
+            text-align: left;
+            display: none; /* Si mostra solo quando c'è uno storico */
+        }
+
+        .sezione-storico h3 {
+            font-family: 'Cinzel', serif;
+            color: #5c1818;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .storico-item {
+            background: #fdfaf3;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+                /* Tasto Copia: Minimale e a forma di icona, ora centrato per quello principale */
+        .copia-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: transparent;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.85rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            color: #8b5a2b;
+            transition: 0.2s;
+            margin-top: 15px; /* Spazio dal contenuto sopra */
+        }
+
+        .copia-btn:hover {
+            background: #f4e8d3;
+            border-color: #8b5a2b;
+            color: #5c1818;
+        }
+
+        .copia-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Un piccolo aggiustamento per i container testuali per far spazio al bottone */
+        #risultato, .storico-item {
+            overflow: hidden; /* Aiuta a contenere il bottone "float" senza sbordare */
+        }
+
+        .footer-crediti {
+            margin-top: 30px;
             padding-top: 15px;
             font-size: 0.95rem;
-            color: #8b5a2b; /* Stesso marrone dei bordi ma più tenue */
+            color: #8b5a2b;
             border-top: 1px solid rgba(139, 90, 43, 0.3);
             text-align: center;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>Archivio dei Tomi Perduti</h1>
         <p>Genera un libro misterioso per la tua campagna di D&D.</p>
         
-        <button onclick="generaLibro()">Rivela un Tomo</button>
+        <button class="genera-btn" onclick="generaLibro()">Rivela un Tomo</button>
         
+        <!-- Riquadro risultato principale -->
         <div id="risultato">Le antiche mensole sono silenziose...</div>
         
         <!-- Immagine del Sigillo del Libro -->
@@ -119,14 +181,22 @@
             <img id="immagineGenerata" class="immagine-tomo" src="" alt="Sigillo del Tomo">
         </div>
 
-        <!-- Nuovo blocco per i tuoi crediti -->
+        <!-- Il bottone Copia Principale ora appare in fondo, centrato -->
+        <div id="areaBottoneCopiaPrincipale"></div>
+
+        <!-- Riquadro Storico -->
+        <div id="sezioneStorico" class="sezione-storico">
+            <h3>Ultimi Tomi Trovati</h3>
+            <div id="storicoLista"></div>
+        </div>
+
         <div class="footer-crediti">
             © 2026 - Castato dalla mente di <strong>bestofmek</strong>
         </div>
     </div>
 
     <script>
-          const titoli = [
+                  const titoli = [
             // Magici (Generano Sigillo)
             { testo: "Trattato sulle Aberrazioni Minori", magico: true },
             { testo: "Grimorio di Klaus", magico: true },
@@ -272,7 +342,7 @@
             "Una fitta ragnatela ricopre l'intera superficie esterna",
             "Le pagine sono fatte di corteccia d'albero flessibile",
             "È circondato da un lieve alone di fumo scuro",
-            "Ha due piccole ali piumate sul dorso",
+            "Ha due piccole wings piumate sul dorso",
             "Il testo scorre da destra a sinistra, come in uno specchio",
             "È rilegato in un metallo iridescente che cambia colore alla luce",
             "C'è una bussola incastrata nella copertina che punta sempre al libro",
@@ -460,6 +530,9 @@
             "Rivela che la campagna che state giocando è, in realtà, la fantasia di un dio annoiato."
         ];
 
+        // Variabile per ricordare lo storico
+        let storicoTomi = [];
+
         function scegliCasuale(lista) {
             const indice = Math.floor(Math.random() * lista.length);
             return lista[indice];
@@ -471,23 +544,81 @@
             const dettaglio = scegliCasuale(dettagli);
             const segreto = scegliCasuale(segreti);
 
-            let descrizione = `Hai trovato "<strong>${titolo.testo}</strong>". ${aspetto}. ${dettaglio} ${segreto}`;
-            document.getElementById('risultato').innerHTML = descrizione;
+            let testoCompleto = `Hai trovato "<strong>${titolo.testo}</strong>". ${aspetto}. ${dettaglio} ${segreto}`;
+            
+            // Imposta il testo nel box principale
+            document.getElementById('risultato').innerHTML = testoCompleto;
 
+            // Creiamo il testo pulito per il bottone copia e aggiungiamo il bottone
+            const testoPulito = testoCompleto.replace(/<\/?strong>/g, '');
+            document.getElementById('areaBottoneCopiaPrincipale').innerHTML = `
+                <button class="copia-btn" onclick="copiaTesto('${testoPulito.replace(/'/g, "\\'")}')">
+                    <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    Copia Tomo
+                </button>
+            `;
+
+            // Logica del sigillo
             const sezioneSigillo = document.getElementById('sezioneSigillo');
             const imgElement = document.getElementById('immagineGenerata');
 
             if (titolo.magico === true) {
                 const titoloSenzaSpazi = titolo.testo.replace(/\s+/g, '');
                 const numeroCasuale = Math.floor(Math.random() * 100000);
-                
                 const urlSigillo = `https://api.dicebear.com/7.x/shapes/svg?seed=${titoloSenzaSpazi}${numeroCasuale}&backgroundColor=transparent`;
-
                 imgElement.src = urlSigillo;
                 sezioneSigillo.style.display = "block";
             } else {
                 sezioneSigillo.style.display = "none";
             }
+
+            // Aggiungiamo allo storico
+            aggiungiAStorico(testoCompleto);
+        }
+
+        function aggiungiAStorico(nuovoTesto) {
+            storicoTomi.unshift(nuovoTesto);
+            
+            if (storicoTomi.length > 4) {
+                storicoTomi.pop(); 
+            }
+
+            aggiornaInterfacciaStorico();
+        }
+
+        function aggiornaInterfacciaStorico() {
+            const sezioneStorico = document.getElementById('sezioneStorico');
+            const storicoLista = document.getElementById('storicoLista');
+            
+            storicoLista.innerHTML = ""; 
+
+            if (storicoTomi.length > 1) {
+                sezioneStorico.style.display = "block";
+                
+                for (let i = 1; i < storicoTomi.length; i++) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'storico-item';
+                    
+                    const testoPulito = storicoTomi[i].replace(/<\/?strong>/g, '');
+                    
+                    itemDiv.innerHTML = `
+                        <div>${storicoTomi[i]}</div>
+                        <!-- Qui aggiungiamo style="float:right" per spingere questo bottone a destra -->
+                        <button class="copia-btn" style="float: right; margin-top: 10px;" onclick="copiaTesto('${testoPulito.replace(/'/g, "\\'")}')">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            Copia
+                        </button>
+                        <div style="clear: both;"></div> <!-- Pulisce il float -->
+                    `;
+                    storicoLista.appendChild(itemDiv);
+                }
+            }
+        }
+
+        function copiaTesto(testo) {
+            navigator.clipboard.writeText(testo).then(() => {
+                alert("Tomo copiato negli appunti! Pronto da incollare in chat.");
+            });
         }
     </script>
 
