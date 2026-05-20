@@ -24,12 +24,11 @@
             min-height: 100vh;
         }
 
-        /* Container allargato per accogliere bene il nuovo layout */
         .container {
             width: 100%;
             max-width: 700px;
             background: #fffdf7;
-            padding: 30px;
+            padding: 20px 30px; /* Ridotto il padding verticale da 30 a 20 */
             border: 2px solid #8b5a2b;
             border-radius: 8px;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
@@ -94,13 +93,12 @@
             padding: 10px;
         }
 
-        /* --- NUOVO: SEZIONE STORICO --- */
         .sezione-storico {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 20px; /* Ridotto da 40 a 20 */
+            padding-top: 15px;
             border-top: 2px double #8b5a2b;
             text-align: left;
-            display: none; /* Si mostra solo quando c'è uno storico */
+            display: none; 
         }
 
         .sezione-storico h3 {
@@ -108,6 +106,29 @@
             color: #5c1818;
             margin-top: 0;
             text-align: center;
+        }
+
+                /* Limita l'altezza della lista e crea uno scroll interno */
+        #storicoLista {
+            max-height: 190px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* Stile personalizzato per la mini-barra di scorrimento */
+        #storicoLista::-webkit-scrollbar {
+            width: 6px;
+        }
+        #storicoLista::-webkit-scrollbar-track {
+            background: #fdfaf3; 
+            border-radius: 4px;
+        }
+        #storicoLista::-webkit-scrollbar-thumb {
+            background: rgba(139, 90, 43, 0.4); 
+            border-radius: 4px;
+        }
+        #storicoLista::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 90, 43, 0.8); 
         }
 
         .storico-item {
