@@ -22,37 +22,53 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow: hidden; /* Blocca definitivamente lo scroll della pagina intera */
         }
 
+        /* Container compattato e con rete di sicurezza per schermi piccoli */
         .container {
             width: 100%;
             max-width: 700px;
+            max-height: 95vh; /* Non supera mai il 95% dello schermo */
+            overflow-y: auto; /* Se serve, scolla all'interno */
             background: #fffdf7;
-            padding: 20px 30px; /* Ridotto il padding verticale da 30 a 20 */
+            padding: 15px 25px;
             border: 2px solid #8b5a2b;
             border-radius: 8px;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.4s ease-in-out;
         }
 
+        /* Scrollbar personalizzata per il container (se lo schermo è microscopico) */
+        .container::-webkit-scrollbar { width: 6px; }
+        .container::-webkit-scrollbar-track { background: transparent; }
+        .container::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+
         h1 {
             font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
             color: #5c1818;
             margin-top: 0;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
+        }
+        
+        p {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
         }
 
         button.genera-btn {
             font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             background-color: #5c1818;
             color: #f4e8d3;
             border: 2px solid #2c1a16;
-            padding: 10px 20px;
+            padding: 8px 15px;
             cursor: pointer;
             border-radius: 5px;
-            margin: 20px 0;
+            margin: 5px 0 10px 0;
             transition: 0.3s;
         }
 
@@ -60,19 +76,19 @@
             background-color: #8b2b2b;
         }
 
-        /* Riquadro risultato principale */
+        /* Riquadro risultato ridimensionato */
         #risultato {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            min-height: 80px;
-            margin-top: 10px;
-            padding: 15px;
+            font-size: 1.15rem;
+            line-height: 1.4;
+            min-height: 60px;
+            margin-top: 5px;
+            padding: 10px;
             border-top: 1px dashed #8b5a2b;
             font-style: italic;
         }
 
         .sezione-sigillo {
-            margin-top: 15px;
+            margin-top: 10px;
             display: none; 
         }
 
@@ -80,68 +96,21 @@
             font-family: 'Cinzel', serif;
             font-weight: bold;
             color: #5c1818;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
+            font-size: 1rem;
+            margin-bottom: 5px;
         }
 
+        /* Immagine resa più piccola */
         .immagine-tomo {
-            max-width: 130px;
+            max-width: 90px;
             border-radius: 50%; 
             background-color: #e8dcc4;
-            border: 4px solid #8b5a2b;
+            border: 3px solid #8b5a2b;
             box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
-            padding: 10px;
+            padding: 5px;
         }
 
-        .sezione-storico {
-            margin-top: 20px; /* Ridotto da 40 a 20 */
-            padding-top: 15px;
-            border-top: 2px double #8b5a2b;
-            text-align: left;
-            display: none; 
-        }
-
-        .sezione-storico h3 {
-            font-family: 'Cinzel', serif;
-            color: #5c1818;
-            margin-top: 0;
-            text-align: center;
-        }
-
-                /* Limita l'altezza della lista e crea uno scroll interno */
-        #storicoLista {
-            max-height: 190px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-
-        /* Stile personalizzato per la mini-barra di scorrimento */
-        #storicoLista::-webkit-scrollbar {
-            width: 6px;
-        }
-        #storicoLista::-webkit-scrollbar-track {
-            background: #fdfaf3; 
-            border-radius: 4px;
-        }
-        #storicoLista::-webkit-scrollbar-thumb {
-            background: rgba(139, 90, 43, 0.4); 
-            border-radius: 4px;
-        }
-        #storicoLista::-webkit-scrollbar-thumb:hover {
-            background: rgba(139, 90, 43, 0.8); 
-        }
-
-        .storico-item {
-            background: #fdfaf3;
-            border: 1px solid rgba(139, 90, 43, 0.4);
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-            position: relative;
-        }
-
-                /* Tasto Copia: Minimale e a forma di icona, ora centrato per quello principale */
+        /* Tasto Copia */
         .copia-btn {
             display: inline-flex;
             align-items: center;
@@ -151,12 +120,12 @@
             border: 1px solid rgba(139, 90, 43, 0.4);
             border-radius: 4px;
             padding: 4px 10px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-family: 'Cinzel', serif;
             cursor: pointer;
             color: #8b5a2b;
             transition: 0.2s;
-            margin-top: 15px; /* Spazio dal contenuto sopra */
+            margin-top: 10px; 
         }
 
         .copia-btn:hover {
@@ -164,22 +133,51 @@
             border-color: #8b5a2b;
             color: #5c1818;
         }
+        .copia-btn svg { width: 14px; height: 14px; fill: currentColor; }
 
-        .copia-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
+        /* STORICO COMPATTATO */
+        .sezione-storico {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px double #8b5a2b;
+            text-align: left;
+            display: none; 
         }
 
-        /* Un piccolo aggiustamento per i container testuali per far spazio al bottone */
-        #risultato, .storico-item {
-            overflow: hidden; /* Aiuta a contenere il bottone "float" senza sbordare */
+        .sezione-storico h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #5c1818;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #storicoLista {
+            max-height: 130px; /* Ancora più basso */
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        #storicoLista::-webkit-scrollbar { width: 6px; }
+        #storicoLista::-webkit-scrollbar-track { background: #fdfaf3; border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb:hover { background: rgba(139, 90, 43, 0.8); }
+
+        .storico-item {
+            background: #fdfaf3;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            line-height: 1.3;
         }
 
         .footer-crediti {
-            margin-top: 30px;
-            padding-top: 15px;
-            font-size: 0.95rem;
+            margin-top: 15px;
+            padding-top: 10px;
+            font-size: 0.85rem;
             color: #8b5a2b;
             border-top: 1px solid rgba(139, 90, 43, 0.3);
             text-align: center;
