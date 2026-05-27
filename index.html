@@ -184,6 +184,29 @@
             border-top: 1px solid rgba(139, 90, 43, 0.3);
             text-align: center;
         }
+
+         .kofi-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px; /* Diminuito per renderlo molto più sottile */
+            background-color: #fdfaf3;
+            color: #8b5a2b;
+            border: 1px dashed rgba(139, 90, 43, 0.5);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem; /* Testo leggermente rimpicciolito */
+            font-family: 'Cinzel', serif;
+            font-weight: normal; /* Tolto il grassetto, ora è più delicato */
+            transition: all 0.3s ease;
+        }
+
+        .kofi-btn:hover {
+            background-color: #8b5a2b;
+            color: #fffdf7;
+            border: 1px solid #8b5a2b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Ombra più leggera e proporzionata */
+            transform: translateY(-1px); /* Movimento ridotto per non sembrare un bottone "giocattolo" */
+        }
     </style>
 </head>
 <body>
@@ -211,8 +234,12 @@
             <div id="storicoLista"></div>
         </div>
 
+                <!-- Footer con Crediti e Bottone Ko-fi -->
         <div class="footer-crediti">
-            © 2026 - Castato dalla mente di <strong>bestofmek</strong>
+            <p>© 2026 - Castato dalla mente di <strong>bestofmek</strong></p>
+            <a href="https://ko-fi.com/bestofmek" target="_blank" class="kofi-btn">
+                Ti ho salvato la sessione? Offrimi un caffè! ☕
+            </a>
         </div>
     </div>
 
