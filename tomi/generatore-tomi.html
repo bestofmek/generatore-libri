@@ -208,6 +208,36 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Ombra più leggera e proporzionata */
             transform: translateY(-1px); /* Movimento ridotto per non sembrare un bottone "giocattolo" */
         }
+
+                .nav-back {
+            display: inline-block;
+            text-align: center;
+            margin-top: 10px;
+            color: #8b5a2b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #5c1818;
+        }
+
+                .nav-back {
+            display: inline-block;
+            text-align: center;
+            margin-top: 10px;
+            color: #8b5a2b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #5c1818;
+        }
     </style>
 </head>
 <body>
@@ -235,7 +265,9 @@
             <div id="storicoLista"></div>
         </div>
 
-                <!-- Footer con Crediti e Bottone Ko-fi -->
+        <a href="../index.html" class="nav-back">← Torna all'Hub</a>
+
+       <!-- Footer con Crediti e Bottone Ko-fi -->
         <div class="footer-crediti">
             <p>© 2026 - Castato dalla mente di <strong>bestofmek</strong></p>
             <a href="https://ko-fi.com/bestofmek" target="_blank" class="kofi-btn">
@@ -844,84 +876,114 @@ function buildSigilSVG(seedText) {
     return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
 }
 
-function generaLibro() {
-    const titolo = scegliCasuale(titoli);
-    const aspetto = scegliCasuale(aspetti);
-    const dettaglio = scegliCasuale(dettagli);
-    const segreto = scegliCasuale(segreti);
-
-    const testoCompleto = `Hai trovato "<strong>${titolo.testo}</strong>". ${aspetto}. ${dettaglio} ${segreto}`;
-    document.getElementById('risultato').innerHTML = testoCompleto;
-
-    const testoPulito = testoCompleto.replace(/<\/?strong>/g, '');
-    document.getElementById('areaBottoneCopiaPrincipale').innerHTML = `
-        <button class="copia-btn" onclick="copiaTesto(${JSON.stringify(testoPulito)})">
-            <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            Copia Tomo
-        </button>
-    `;
-
-    const sezioneSigillo = document.getElementById('sezioneSigillo');
-    const imgElement = document.getElementById('immagineGenerata');
-
-    if (titolo.magico === true) {
-        const seed = `${titolo.testo}|${aspetto}|${dettaglio}|${segreto}`;
-        imgElement.src = buildSigilSVG(seed);
-        imgElement.alt = `Sigillo arcano del tomo ${titolo.testo}`;
-        sezioneSigillo.style.display = "block";
-    } else {
-        sezioneSigillo.style.display = "none";
-        imgElement.src = "";
+    // Funzione sicura per rimuovere i tag HTML
+    function pulisciTestoDaHTML(testoSporco) {
+        let div = document.createElement("div");
+        div.innerHTML = testoSporco;
+        return div.textContent || div.innerText || "";
     }
 
-    aggiungiAStorico(testoCompleto);
-}
+    function generaLibro() {
+        const titoloObj = scegliCasuale(titoli);
+        const aspetto = scegliCasuale(aspetti);
+        const dettaglio = scegliCasuale(dettagli);
+        const segreto = scegliCasuale(segreti);
 
-function aggiungiAStorico(nuovoTesto) {
-    storicoTomi.unshift(nuovoTesto);
-    if (storicoTomi.length > 4) {
-        storicoTomi.pop();
-    }
-    aggiornaInterfacciaStorico();
-}
+        const rigaMagica = titoloObj.magico ? " <em>(Emana un'aura magica)</em>" : "";
+        const testoCompleto = `Hai trovato "<strong>${titoloObj.testo}</strong>"${rigaMagica}. ${aspetto}. ${dettaglio} <strong>Segreto:</strong> ${segreto}`;
+        
+        document.getElementById('risultato').innerHTML = testoCompleto;
 
-function aggiornaInterfacciaStorico() {
-    const sezioneStorico = document.getElementById('sezioneStorico');
-    const storicoLista = document.getElementById('storicoLista');
+        // Prepariamo l'immagine SVG
+        const svgURI = buildSigilSVG(testoCompleto);
+        const testoPulito = pulisciTestoDaHTML(testoCompleto);
 
-    storicoLista.innerHTML = "";
-
-    if (storicoTomi.length > 1) {
-        sezioneStorico.style.display = "block";
-
-        for (let i = 1; i < storicoTomi.length; i++) {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'storico-item';
-
-            const testoPulito = storicoTomi[i].replace(/<\/?strong>/g, '');
-
-            itemDiv.innerHTML = `
-                <div>${storicoTomi[i]}</div>
-                <button class="copia-btn" style="float:right; margin-top:10px;" onclick='copiaTesto(${JSON.stringify(testoPulito)})'>
+        // Creiamo i due bottoni (Copia e Scarica)
+        document.getElementById('areaBottoneCopiaPrincipale').innerHTML = `
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="bottoneCopiaTomo" class="copia-btn">
                     <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                    Copia
+                    Copia Tomo
                 </button>
-                <div style="clear:both;"></div>
-            `;
-            storicoLista.appendChild(itemDiv);
-        }
-    } else {
-        sezioneStorico.style.display = "none";
-    }
-}
+                <a href="${svgURI}" download="sigillo-tomo.svg" class="copia-btn" style="text-decoration: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Scarica Sigillo
+                </a>
+            </div>
+        `;
 
-function copiaTesto(testo) {
-    navigator.clipboard.writeText(testo).then(() => {
-        alert("Tomo copiato negli appunti! Pronto da incollare in chat.");
-    }).catch(() => {
-        alert("Copia non riuscita su questo browser.");
-    });
-}
+        // Aggiungiamo l'evento copia in modo sicuro
+        document.getElementById('bottoneCopiaTomo').addEventListener('click', function() {
+            copiaTesto(testoPulito);
+        });
+
+        const sezioneSigillo = document.getElementById('sezioneSigillo');
+        const imgElement = document.getElementById('immagineGenerata');
+
+        imgElement.src = svgURI;
+        sezioneSigillo.style.display = "block";
+
+        // Aggiungiamo allo storico (salviamo l'HTML e il seed/SVG per poterlo ricreare)
+        storicoTomi.unshift({
+            html: testoCompleto,
+            pulito: testoPulito,
+            svg: svgURI
+        });
+
+        if (storicoTomi.length > 4) {
+            storicoTomi.pop();
+        }
+
+        aggiornaInterfacciaStorico();
+    }
+
+    function aggiornaInterfacciaStorico() {
+        const sezioneStorico = document.getElementById('sezioneStorico');
+        const storicoLista = document.getElementById('storicoLista');
+
+        storicoLista.innerHTML = "";
+
+        if (storicoTomi.length > 1) {
+            sezioneStorico.style.display = "block";
+
+            for (let i = 1; i < storicoTomi.length; i++) {
+                const item = storicoTomi[i];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'storico-item';
+
+                // Usiamo anche per i tomi la mini-preview visiva nello storico!
+                itemDiv.innerHTML = `
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
+                        <img src="${item.svg}" style="width: 32px; height: 32px; background: radial-gradient(circle, #f7f0e2 0%, #eadcc1 70%, #ddc8a3 100%); border-radius: 50%; border: 1px solid #8b5a2b; padding: 2px;">
+                        <div style="flex: 1;">${item.html}</div>
+                    </div>
+                    <button class="copia-btn btn-storico-copia" style="float:right; margin-top:5px;">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copia
+                    </button>
+                    <div style="clear:both;"></div>
+                `;
+
+                // Aggiungiamo l'evento in modo sicuro
+                const btn = itemDiv.querySelector('.btn-storico-copia');
+                btn.addEventListener('click', function() {
+                    copiaTesto(item.pulito);
+                });
+
+                storicoLista.appendChild(itemDiv);
+            }
+        } else {
+            sezioneStorico.style.display = "none";
+        }
+    }
+
+    function copiaTesto(testo) {
+        navigator.clipboard.writeText(testo).then(() => {
+            alert("Tomo copiato negli appunti! Pronto da incollare in chat.");
+        }).catch(() => {
+            alert("Copia non riuscita su questo browser.");
+        });
+    }
     </script>
 
 </body>
