@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Reliquie - Arcane Generators</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5a2b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20'/%3E%3Cpath d='M8 7h6'/%3E%3Cpath d='M8 11h8'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f4e8d3;
+            background-image: radial-gradient(#d3c1a3 15%, transparent 16%), radial-gradient(#d3c1a3 15%, transparent 16%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #2c1a16;
+            font-family: 'Crimson Text', serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden; /* Blocca definitivamente lo scroll della pagina intera */
+        }
+
+        /* Container compattato e con rete di sicurezza per schermi piccoli */
+        .container {
+            width: 100%;
+            max-width: 700px;
+            max-height: 95vh; /* Non supera mai il 95% dello schermo */
+            overflow-y: auto; /* Se serve, scolla all'interno */
+            background: #fffdf7;
+            padding: 15px 25px;
+            border: 2px solid #8b5a2b;
+            border-radius: 8px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease-in-out;
+        }
+
+        /* Scrollbar personalizzata per il container (se lo schermo è microscopico) */
+        .container::-webkit-scrollbar { width: 6px; }
+        .container::-webkit-scrollbar-track { background: transparent; }
+        .container::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #5c1818;
+            margin-top: 0;
+            margin-bottom: 2px;
+        }
+        
+        p {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        button.genera-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background-color: #5c1818;
+            color: #f4e8d3;
+            border: 2px solid #2c1a16;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px 0 10px 0;
+            transition: 0.3s;
+        }
+
+        button.genera-btn:hover {
+            background-color: #8b2b2b;
+        }
+
+        /* Riquadro risultato ridimensionato */
+        #risultato {
+            font-size: 1.15rem;
+            line-height: 1.4;
+            min-height: 60px;
+            margin-top: 5px;
+            padding: 10px;
+            border-top: 1px dashed #8b5a2b;
+            font-style: italic;
+        }
+
+        .sezione-sigillo {
+            margin-top: 10px;
+            display: none; 
+        }
+
+        .sezione-sigillo p {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            color: #5c1818;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        /* Immagine resa più piccola */
+        .immagine-tomo {
+            max-width: 92px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f7f0e2 0%, #eadcc1 70%, #ddc8a3 100%);
+            border: 1.5px solid rgba(110, 74, 45, 0.55);
+            box-shadow:
+                       inset 0 0 12px rgba(92, 24, 24, 0.08),
+                             0 2px 8px rgba(44, 26, 22, 0.18);
+            padding: 7px;
+        }
+
+        /* Tasto Copia */
+        .copia-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: transparent;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            color: #8b5a2b;
+            transition: 0.2s;
+            margin-top: 10px; 
+        }
+
+        .copia-btn:hover {
+            background: #f4e8d3;
+            border-color: #8b5a2b;
+            color: #5c1818;
+        }
+        .copia-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        /* STORICO COMPATTATO */
+        .sezione-storico {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px double #8b5a2b;
+            text-align: left;
+            display: none; 
+        }
+
+        .sezione-storico h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #5c1818;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #storicoLista {
+            max-height: 130px; /* Ancora più basso */
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        #storicoLista::-webkit-scrollbar { width: 6px; }
+        #storicoLista::-webkit-scrollbar-track { background: #fdfaf3; border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb:hover { background: rgba(139, 90, 43, 0.8); }
+
+        .storico-item {
+            background: #fdfaf3;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .footer-crediti {
+            margin-top: 15px;
+            padding-top: 10px;
+            font-size: 0.85rem;
+            color: #8b5a2b;
+            border-top: 1px solid rgba(139, 90, 43, 0.3);
+            text-align: center;
+        }
+
+         .kofi-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px; /* Diminuito per renderlo molto più sottile */
+            background-color: #fdfaf3;
+            color: #8b5a2b;
+            border: 1px dashed rgba(139, 90, 43, 0.5);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem; /* Testo leggermente rimpicciolito */
+            font-family: 'Cinzel', serif;
+            font-weight: normal; /* Tolto il grassetto, ora è più delicato */
+            transition: all 0.3s ease;
+        }
+
+        .kofi-btn:hover {
+            background-color: #8b5a2b;
+            color: #fffdf7;
+            border: 1px solid #8b5a2b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Ombra più leggera e proporzionata */
+            transform: translateY(-1px); /* Movimento ridotto per non sembrare un bottone "giocattolo" */
+        }
+        
+        .nav-back {
+            display: inline-block;
+            text-align: center;
+            margin-top: 10px;
+            color: #8b5a2b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #5c1818;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Archivio delle Reliquie</h1>
+        <p>Oggetti sacri, corrotti o dimenticati pronti per la tua campagna.</p>
+        
+        <button class="genera-btn" onclick="generaReliquia()">Rivela una Reliquia</button>
+        
+        <!-- Riquadro risultato principale -->
+        <div id="risultato">I manufatti stanno riaffiorando dalla polvere...</div>
+        
+        <!-- Immagine del Sigillo (Manteniamo lo spazio per mantenere l'html uguale, anche se possiamo nasconderlo) -->
+        <div id="sezioneSigillo" class="sezione-sigillo">
+            <p>Il sigillo dell'oggetto:</p>
+            <img id="immagineGenerata" class="immagine-tomo" src="" alt="Sigillo Reliquia">
+        </div>
+
+        <!-- Il bottone Copia Principale ora appare in fondo, centrato -->
+        <div id="areaBottoneCopiaPrincipale"></div>
+
+        <!-- Riquadro Storico -->
+        <div id="sezioneStorico" class="sezione-storico">
+            <h3>Ultime 3 Scoperte</h3>
+            <div id="storicoLista"></div>
+        </div>
+
+        <a href="../index.html" class="nav-back">← Torna all'Hub</a>
+
+        <!-- Footer con Crediti e Bottone Ko-fi -->
+        <div class="footer-crediti">
+            <p>© 2026 - Castato dalla mente di <strong>bestofmek</strong></p>
+            <a href="https://ko-fi.com/bestofmek" target="_blank" class="kofi-btn">
+                Ti ho salvato la sessione? Offrimi un caffè! ☕
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const tipi = ["La Spada", "L'Anello", "Il Calice", "La Corona", "La Maschera", "L'Amuleto", "Il Manto", "Il Pugnale", "L'Occhio", "Il Sigillo", "Il Bastone", "Lo Specchio", "Il Reliquiario", "L'Armatura", "La Lanterna", "La Clessidra"];
+    const aggettivi = ["Infranto", "Sussurrante", "d'Ossa", "di Cenere", "Senza Luce", "Insanguinato", "Cieco", "Cremisi", "di Ruggine", "di Vetro Nero", "Dimenticato", "Velato", "di Ghiaccio", "Profanato", "Silente"];
+    const exProprietari = ["dei Re Sepolti", "dell'Ultimo Eretico", "di un Santo Senza Nome", "del Falso Profeta", "delle Regine di Sale", "di un Angelo Caduto", "dei Discepoli Ciechi", "del Tiranno di Vetro", "dei Monaci del Sole Nero", "dell'Architetto Pazzo"];
+    
+    const descrizioniVisive = [
+      "Emana un debole bagliore malato se lasciato al buio.", 
+      "È perennemente gelido al tocco, a prescindere dal clima.", 
+      "Sembra vibrare impercettibilmente quando ci sono ombre vicine.", 
+      "La sua superficie riflette dettagli di un mondo che non è questo.", 
+      "Profuma lievemente di incenso stantio e sangue secco.", 
+      "È ricoperto da micro-crepe che sembrano spostarsi quando non lo guardi.", 
+      "Le ombre proiettate da questo oggetto sembrano sempre leggermente sbagliate."
+    ];
+    
+    const maledizioni = [
+      "Chi lo porta sogna in loop il proprio funerale ogni notte.", 
+      "Fa lentamente appassire la vegetazione e marcire il cibo nelle sue vicinanze.", 
+      "Rende il portatore paranoico e morbosamente geloso dell'oggetto stesso.", 
+      "Richiama istintivamente l'attenzione di spiriti e non-morti in un raggio di cento metri.", 
+      "Ogni volta che si usa la sua magia, il portatore perde per sempre un ricordo d'infanzia.", 
+      "Sussurra continuamente segreti terribili che non si riescono più a dimenticare.", 
+      "Il sangue del portatore si scurisce e non coagula più normalmente."
+    ];
+
+    let storicoTomi = [];
+
+    function scegliCasuale(lista) {
+        return lista[Math.floor(Math.random() * lista.length)];
+    }
+
+    // Funzioni SVG
+    function hashString(str) {
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+    }
+
+    function createPRNG(seed) {
+        let s = seed >>> 0;
+        return function () {
+            s = (s + 0x6D2B79F5) >>> 0;
+            let t = Math.imul(s ^ (s >>> 15), 1 | s);
+            t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    function polar(cx, cy, r, a) {
+        const rad = (a - 90) * Math.PI / 180;
+        return {
+            x: cx + r * Math.cos(rad),
+            y: cy + r * Math.sin(rad)
+        };
+    }
+
+    function polygonPoints(cx, cy, r, sides, rotation = 0) {
+        const pts = [];
+        for (let i = 0; i < sides; i++) {
+            const a = rotation + (360 / sides) * i;
+            const p = polar(cx, cy, r, a);
+            pts.push(`${p.x.toFixed(2)},${p.y.toFixed(2)}`);
+        }
+        return pts.join(" ");
+    }
+
+    function starPath(cx, cy, outerR, innerR, points, rotation = 0) {
+        let d = "";
+        for (let i = 0; i < points * 2; i++) {
+            const r = i % 2 === 0 ? outerR : innerR;
+            const a = rotation + (360 / (points * 2)) * i;
+            const p = polar(cx, cy, r, a);
+            d += (i === 0 ? "M" : "L") + p.x.toFixed(2) + " " + p.y.toFixed(2) + " ";
+        }
+        return d + "Z";
+    }
+
+    function line(x1, y1, x2, y2, extra = "") {
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;
+    }
+
+    function circle(cx, cy, r, extra = "") {
+        return `<circle cx="${cx}" cy="${cy}" r="${r}" ${extra}/>`;
+    }
+
+    function path(d, extra = "") {
+        return `<path d="${d}" ${extra}/>`;
+    }
+
+    function polyline(points, extra = "") {
+        return `<polyline points="${points}" ${extra}/>`;
+    }
+
+    function polygon(points, extra = "") {
+        return `<polygon points="${points}" ${extra}/>`;
+    }
+
+    function addRadialMarks(rand, count, r1, r2, strokeWidth = 1.2) {
+        let out = "";
+        for (let i = 0; i < count; i++) {
+            const jitter = (rand() - 0.5) * 6;
+            const a = (360 / count) * i + jitter;
+            const p1 = polar(100, 100, r1, a);
+            const p2 = polar(100, 100, r2, a);
+            out += line(p1.x, p1.y, p2.x, p2.y, `stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="0.8"`);
+        }
+        return out;
+    }
+
+    function addDots(rand, count, r, sizeMin = 1.5, sizeMax = 3.2) {
+        let out = "";
+        for (let i = 0; i < count; i++) {
+            const a = (360 / count) * i + (rand() - 0.5) * 8;
+            const p = polar(100, 100, r, a);
+            const s = sizeMin + rand() * (sizeMax - sizeMin);
+            out += circle(p.x, p.y, s, `fill="currentColor" opacity="${0.55 + rand() * 0.3}"`);
+        }
+        return out;
+    }
+
+    function addTriangles(rand, count, r, size = 7, outward = true) {
+        let out = "";
+        for (let i = 0; i < count; i++) {
+            const a = (360 / count) * i;
+            const tip = polar(100, 100, r + (outward ? size : -size), a);
+            const l = polar(100, 100, r, a - 5);
+            const rr = polar(100, 100, r, a + 5);
+            out += polygon(
+                `${tip.x.toFixed(2)},${tip.y.toFixed(2)} ${l.x.toFixed(2)},${l.y.toFixed(2)} ${rr.x.toFixed(2)},${rr.y.toFixed(2)}`,
+                `fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.7"`
+            );
+        }
+        return out;
+    }
+
+    function addRuneTicks(rand, count, r) {
+        let out = "";
+        for (let i = 0; i < count; i++) {
+            const a = (360 / count) * i;
+            const p1 = polar(100, 100, r - 3, a);
+            const p2 = polar(100, 100, r + 3, a);
+            out += line(p1.x, p1.y, p2.x, p2.y, `stroke="currentColor" stroke-width="1" opacity="0.75"`);
+            if (rand() > 0.5) {
+                const branch = polar(100, 100, r, a + 6);
+                out += line(branch.x, branch.y, p2.x, p2.y, `stroke="currentColor" stroke-width="0.9" opacity="0.5"`);
+            }
+        }
+        return out;
+    }
+
+    function buildSigilSVG(seedText) {
+        const seed = hashString(seedText);
+        const rand = createPRNG(seed);
+        const archetype = seed % 10;
+        const rotation = Math.floor(rand() * 360);
+        const rings = 2 + Math.floor(rand() * 2);
+        const density = 6 + Math.floor(rand() * 7);
+
+        let shapes = "";
+        let defs = `
+          <defs>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="0.6" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+        `;
+
+        for (let i = 0; i < rings; i++) {
+            const r = 68 - i * 10;
+            const opacity = 0.9 - i * 0.18;
+            shapes += circle(100, 100, r, `fill="none" stroke="currentColor" stroke-width="${i === 0 ? 2 : 1.2}" opacity="${opacity}"`);
+        }
+
+        shapes += addRuneTicks(rand, 12 + Math.floor(rand() * 8), 61);
+        shapes += addDots(rand, 8 + density, 52, 1.1, 2.6);
+
+        switch (archetype) {
+            case 0: {
+                shapes += path(starPath(100, 100, 48, 20, 5, rotation), `fill="none" stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += circle(100, 100, 10, `fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.8"`);
+                shapes += addTriangles(rand, 5, 69, 8, true);
+                break;
+            }
+            case 1: {
+                shapes += path(`M70 112 Q100 60 130 112 Q100 145 70 112 Z`, `fill="none" stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += circle(100, 104, 10, `fill="none" stroke="currentColor" stroke-width="1.8"`);
+                shapes += circle(100, 104, 3.5, `fill="currentColor" opacity="0.85"`);
+                shapes += addRadialMarks(rand, 8, 70, 79, 1.3);
+                break;
+            }
+            case 2: {
+                shapes += polygon(polygonPoints(100, 100, 42, 3, rotation), `fill="none" stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += polygon(polygonPoints(100, 100, 22, 3, rotation + 180), `fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"`);
+                shapes += line(100, 58, 100, 142, `stroke="currentColor" stroke-width="1.2" opacity="0.7"`);
+                shapes += addTriangles(rand, 6, 70, 6, true);
+                break;
+            }
+            case 3: {
+                const petals = 8;
+                for (let i = 0; i < petals; i++) {
+                    const a = rotation + (360 / petals) * i;
+                    const p1 = polar(100, 100, 18, a - 10);
+                    const p2 = polar(100, 100, 42, a);
+                    const p3 = polar(100, 100, 18, a + 10);
+                    shapes += path(`M100 100 L${p1.x.toFixed(2)} ${p1.y.toFixed(2)} Q${p2.x.toFixed(2)} ${p2.y.toFixed(2)} ${p3.x.toFixed(2)} ${p3.y.toFixed(2)} Z`, `fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.82"`);
+                }
+                shapes += circle(100, 100, 14, `fill="none" stroke="currentColor" stroke-width="1.3"`);
+                break;
+            }
+            case 4: {
+                shapes += circle(100, 100, 26, `fill="none" stroke="currentColor" stroke-width="2" opacity="0.95"`);
+                shapes += addRadialMarks(rand, 16, 30, 48, 1.5);
+                shapes += addTriangles(rand, 8, 70, 7, true);
+                shapes += circle(100, 100, 5, `fill="currentColor" opacity="0.85"`);
+                break;
+            }
+            case 5: {
+                const stars = 6 + Math.floor(rand() * 4);
+                let points = [];
+                for (let i = 0; i < stars; i++) {
+                    const p = polar(100, 100, 36 + rand() * 18, rotation + (360 / stars) * i);
+                    points.push(p);
+                    shapes += circle(p.x, p.y, 2, `fill="currentColor" opacity="0.8"`);
+                }
+                for (let i = 0; i < points.length; i++) {
+                    const next = points[(i + 2) % points.length];
+                    shapes += line(points[i].x, points[i].y, next.x, next.y, `stroke="currentColor" stroke-width="1.1" opacity="0.6"`);
+                }
+                shapes += circle(100, 100, 8, `fill="none" stroke="currentColor" stroke-width="1.2"`);
+                break;
+            }
+            case 6: {
+                const sides = 6;
+                shapes += polygon(polygonPoints(100, 100, 38, sides, rotation), `fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.9"`);
+                shapes += polygon(polygonPoints(100, 100, 24, sides, rotation + 30), `fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"`);
+                for (let i = 0; i < sides; i++) {
+                    const a = rotation + (360 / sides) * i;
+                    const p1 = polar(100, 100, 24, a);
+                    const p2 = polar(100, 100, 38, a + 30);
+                    shapes += line(p1.x, p1.y, p2.x, p2.y, `stroke="currentColor" stroke-width="1" opacity="0.65"`);
+                }
+                shapes += addDots(rand, 6, 14, 1.5, 2.4);
+                break;
+            }
+            case 7: {
+                shapes += path(starPath(100, 100, 44, 30, 8, rotation), `fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.78"`);
+                shapes += addTriangles(rand, 8, 72, 10, true);
+                shapes += addRadialMarks(rand, 8, 18, 58, 1.4);
+                shapes += circle(100, 100, 12, `fill="none" stroke="currentColor" stroke-width="1.5"`);
+                break;
+            }
+            case 8: {
+                shapes += path(`M64 116 Q100 50 136 116`, `fill="none" stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += path(`M74 120 Q100 74 126 120`, `fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.75"`);
+                shapes += circle(100, 90, 8, `fill="none" stroke="currentColor" stroke-width="1.4"`);
+                shapes += line(100, 98, 100, 132, `stroke="currentColor" stroke-width="1.4" opacity="0.75"`);
+                shapes += addDots(rand, 10, 56, 1.2, 2.5);
+                break;
+            }
+            case 9: {
+                shapes += line(100, 58, 100, 142, `stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += line(58, 100, 142, 100, `stroke="currentColor" stroke-width="2" opacity="0.9"`);
+                shapes += circle(100, 100, 24, `fill="none" stroke="currentColor" stroke-width="1.4"`);
+                shapes += path(starPath(100, 100, 16, 7, 4, rotation + 45), `fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.8"`);
+                shapes += addRadialMarks(rand, 4, 62, 76, 1.5);
+                break;
+            }
+        }
+
+        if (rand() > 0.45) {
+            const innerPoints = 4 + Math.floor(rand() * 4);
+            shapes += polygon(polygonPoints(100, 100, 12 + rand() * 10, innerPoints, rotation / 2), `fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.55"`);
+        }
+
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" aria-label="Sigillo arcano" role="img">
+            ${defs}
+            <g fill="none" stroke="#6e4a2d" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+              ${shapes}
+            </g>
+          </svg>
+        `.trim();
+
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function generaReliquia() {
+        const nomeCompleto = `${scegliCasuale(tipi)} ${scegliCasuale(aggettivi)} ${scegliCasuale(exProprietari)}`;
+        const aspetto = scegliCasuale(descrizioniVisive);
+        const maledizione = scegliCasuale(maledizioni);
+
+        const testoCompleto = `Hai rinvenuto "<strong>${nomeCompleto}</strong>". ${aspetto} Maledizione: ${maledizione}`;
+        document.getElementById('risultato').innerHTML = testoCompleto;
+
+        // Rimozione tag HTML per la copia pulita senza causare errori in VS Code
+        const testoPulito = testoCompleto.replace(/<strong>/g, '').replace(/<\/strong>/g, '');
+        
+        document.getElementById('areaBottoneCopiaPrincipale').innerHTML = `
+            <button class="copia-btn" onclick="copiaTesto('${testoPulito.replace(/'/g, "\\'")}')">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                Copia Reliquia
+            </button>
+        `;
+
+        const sezioneSigillo = document.getElementById('sezioneSigillo');
+        const imgElement = document.getElementById('immagineGenerata');
+
+        const seed = `${nomeCompleto}|${aspetto}|${maledizione}`;
+        imgElement.src = buildSigilSVG(seed);
+        imgElement.alt = `Sigillo della reliquia ${nomeCompleto}`;
+        sezioneSigillo.style.display = "block";
+
+        aggiungiAStorico(testoCompleto);
+    }
+
+    function aggiungiAStorico(nuovoTesto) {
+        storicoTomi.unshift(nuovoTesto);
+        if (storicoTomi.length > 4) {
+            storicoTomi.pop();
+        }
+        aggiornaInterfacciaStorico();
+    }
+
+    function aggiornaInterfacciaStorico() {
+        const sezioneStorico = document.getElementById('sezioneStorico');
+        const storicoLista = document.getElementById('storicoLista');
+
+        storicoLista.innerHTML = "";
+
+        if (storicoTomi.length > 1) {
+            sezioneStorico.style.display = "block";
+
+            for (let i = 1; i < storicoTomi.length; i++) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'storico-item';
+
+                // Rimozione tag HTML pulita
+                const testoSenzaTag = storicoTomi[i].replace(/<strong>/g, '').replace(/<\/strong>/g, '');
+
+                itemDiv.innerHTML = `
+                    <div>${storicoTomi[i]}</div>
+                    <button class="copia-btn" style="float:right; margin-top:10px;">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copia
+                    </button>
+                    <div style="clear:both;"></div>
+                `;
+                
+                // Binding dell'evento in modo sicuro
+                const btn = itemDiv.querySelector('.copia-btn');
+                btn.addEventListener('click', function() {
+                    copiaTesto(testoSenzaTag);
+                });
+
+                storicoLista.appendChild(itemDiv);
+            }
+        } else {
+            sezioneStorico.style.display = "none";
+        }
+    }
+
+    function copiaTesto(testo) {
+        navigator.clipboard.writeText(testo).then(() => {
+            alert("Reliquia copiata negli appunti! Pronta da incollare in chat.");
+        }).catch(() => {
+            alert("Copia non riuscita su questo browser.");
+        });
+    }
+    </script>
+
+</body>
+</html>
