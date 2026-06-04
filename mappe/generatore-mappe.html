@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Mappe - Arcane Generators</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5a2b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20'/%3E%3Cpath d='M8 7h6'/%3E%3Cpath d='M8 11h8'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f4e8d3;
+            background-image: radial-gradient(#d3c1a3 15%, transparent 16%), radial-gradient(#d3c1a3 15%, transparent 16%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #2c1a16;
+            font-family: 'Crimson Text', serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            max-height: 95vh;
+            overflow-y: auto;
+            background: #fffdf7;
+            padding: 15px 25px;
+            border: 2px solid #8b5a2b;
+            border-radius: 8px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease-in-out;
+            position: relative;
+        }
+
+        .container::-webkit-scrollbar { width: 6px; }
+        .container::-webkit-scrollbar-track { background: transparent; }
+        .container::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #5c1818;
+            margin-top: 0;
+            margin-bottom: 2px;
+        }
+        
+        p {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        button.genera-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background-color: #5c1818;
+            color: #f4e8d3;
+            border: 2px solid #2c1a16;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px 0 10px 0;
+            transition: 0.3s;
+        }
+
+        button.genera-btn:hover { background-color: #8b2b2b; }
+
+        #risultato {
+            font-size: 1.15rem;
+            line-height: 1.4;
+            min-height: 60px;
+            margin-top: 5px;
+            padding: 10px;
+            border-top: 1px dashed #8b5a2b;
+            font-style: italic;
+        }
+
+        .sezione-sigillo { margin-top: 10px; display: none; }
+        .sezione-sigillo p {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            color: #5c1818;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .immagine-tomo {
+            max-width: 110px; /* Un po' più grande per le mappe */
+            border-radius: 50%;
+            background: radial-gradient(circle, #f7f0e2 0%, #eadcc1 70%, #ddc8a3 100%);
+            border: 1.5px solid rgba(110, 74, 45, 0.55);
+            box-shadow: inset 0 0 12px rgba(92, 24, 24, 0.08), 0 2px 8px rgba(44, 26, 22, 0.18);
+            padding: 7px;
+        }
+
+        .copia-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: transparent;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            color: #8b5a2b;
+            transition: 0.2s;
+            margin-top: 10px; 
+        }
+
+        .copia-btn:hover { background: #f4e8d3; border-color: #8b5a2b; color: #5c1818; }
+        .copia-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        .sezione-storico {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px double #8b5a2b;
+            text-align: left;
+            display: none; 
+        }
+
+        .sezione-storico h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #5c1818;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #storicoLista { max-height: 130px; overflow-y: auto; padding-right: 8px; }
+        #storicoLista::-webkit-scrollbar { width: 6px; }
+        #storicoLista::-webkit-scrollbar-track { background: #fdfaf3; border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb { background: rgba(139, 90, 43, 0.4); border-radius: 4px; }
+        #storicoLista::-webkit-scrollbar-thumb:hover { background: rgba(139, 90, 43, 0.8); }
+
+        .storico-item {
+            background: #fdfaf3;
+            border: 1px solid rgba(139, 90, 43, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .footer-crediti {
+            margin-top: 15px;
+            padding-top: 10px;
+            font-size: 0.85rem;
+            color: #8b5a2b;
+            border-top: 1px solid rgba(139, 90, 43, 0.3);
+            text-align: center;
+        }
+
+        .kofi-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            background-color: #fdfaf3;
+            color: #8b5a2b;
+            border: 1px dashed rgba(139, 90, 43, 0.5);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+        }
+
+        .kofi-btn:hover {
+            background-color: #8b5a2b; color: #fffdf7; border: 1px solid #8b5a2b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); transform: translateY(-1px);
+        }
+
+        .nav-back {
+            display: inline-block;
+            text-align: center;
+            margin-top: 10px;
+            color: #8b5a2b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover { color: #5c1818; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cartografo Arcano</h1>
+        <p>Genera spunti tattici ed esplorativi per le tue mappe.</p>
+        
+        <button class="genera-btn" onclick="generaMappa()">Traccia la Mappa</button>
+        
+        <div id="risultato">In attesa di tracciare nuove coordinate...</div>
+        
+        <div id="sezioneSigillo" class="sezione-sigillo">
+            <p>Simbolo Cartografico:</p>
+            <img id="immagineGenerata" class="immagine-tomo" src="" alt="Icona Mappa">
+        </div>
+
+        <div id="areaBottoneCopiaPrincipale"></div>
+
+        <div id="sezioneStorico" class="sezione-storico">
+            <h3>Ultime 3 Mappe Esplorate</h3>
+            <div id="storicoLista"></div>
+        </div>
+
+        <a href="../index.html" class="nav-back">← Torna all'Hub</a>
+
+        <div class="footer-crediti">
+            <p>© 2026 - Castato dalla mente di <strong>bestofmek</strong></p>
+            <a href="https://ko-fi.com/bestofmek" target="_blank" class="kofi-btn">
+                Ti ho salvato la sessione? Offrimi un caffè! ☕
+            </a>
+        </div>
+    </div>
+
+    <script>
+    // 1. Luoghi (Mappe)
+    const luoghi = ["La Cripta", "L'Osservatorio", "Il Ponte", "Le Rovine", "L'Avamposto", "La Caverna", "Il Tempio", "L'Arena", "Le Fogne", "La Prigione", "La Forgia", "Il Giardino", "Il Mausoleo", "La Biblioteca", "Il Labirinto"];
+    
+    // 2. Aggettivi / Stati
+    const stati = ["Sommerso", "di Cristallo", "Infestato dalle Spore", "In Rovina", "Sospeso nel Vuoto", "di Ghiaccio Perenne", "Meccanico", "Corrotto", "in Fiamme", "Dimenticato", "Avvolto dalla Nebbia", "di Ossidiana", "Fossilizzato", "Illusionistico"];
+    
+    // 3. Ostacoli Ambientali / Pericoli
+    const ostacoli = [
+        "L'intero pavimento è inclinato di 30 gradi e scivoloso.",
+        "Fiumi di magma cristallizzato frammentano la zona, emettendo calore letale.",
+        "Il soffitto è instabile e crolla se si producono suoni troppo forti.",
+        "Delle forti correnti di vento magico spingono verso il centro della mappa.",
+        "Il pavimento è coperto da mezzo metro d'acqua scura che nasconde fosse profonde.",
+        "L'aria è tossica, richiede di trattenere il respiro o filtrare l'aria ogni 2 minuti.",
+        "L'illuminazione cambia colore ciclicamente, invertendo la gravità per brevi istanti.",
+        "Sottili fili di ragnatela invisibili rischiano di paralizzare chi ci passa attraverso."
+    ];
+    
+    // 4. Punti di Interesse / Sorprese
+    const sorprese = [
+        "Al centro troneggia l'enorme scheletro di una creatura mai vista prima.",
+        "C'è un altare integro che sussurra deboli promesse di potere.",
+        "Una sfera perfetta di buio assoluto assorbe la luce in un angolo.",
+        "Migliaia di candele galleggiano nell'aria, bruciando senza consumarsi.",
+        "Un enorme ingranaggio dorato incastrato nel muro gira molto lentamente.",
+        "Un mercante pietrificato stringe ancora al petto un forziere intatto.",
+        "Un obelisco emette un debole ronzio che fa vibrare le armi di metallo.",
+        "Uno specchio d'acqua circolare riflette il cielo notturno, anche se siete al chiuso."
+    ];
+
+    let storicoTomi = [];
+
+    function scegliCasuale(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
+    function hashString(str) {
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return h >>> 0;
+    }
+
+    function createPRNG(seed) {
+        let s = seed >>> 0;
+        return function () {
+            s = (s + 0x6D2B79F5) >>> 0;
+            let t = Math.imul(s ^ (s >>> 15), 1 | s);
+            t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    function getColorByStato(stato) {
+        const s = stato.toLowerCase();
+        if (s.includes("sommerso") || s.includes("acqua")) return "#2980b9"; 
+        if (s.includes("fiamme") || s.includes("magma")) return "#c0392b"; 
+        if (s.includes("spore") || s.includes("corrotto")) return "#27ae60"; 
+        if (s.includes("ghiaccio") || s.includes("cristallo")) return "#85c1e9";
+        if (s.includes("ossidiana") || s.includes("vuoto")) return "#34495e";
+        if (s.includes("meccanico") || s.includes("forgia")) return "#d35400";
+        return "#8b5a2b"; 
+    }
+
+    // Costruisce la grafica vettoriale di una Bussola/Rosa dei Venti o Mappa stilizzata
+    function buildMapSVG(luogo, stato, seedText) {
+        const seed = hashString(seedText);
+        const rand = createPRNG(seed);
+        const color = getColorByStato(stato);
+
+        let defs = `
+          <defs>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="0.8" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect width="20" height="20" fill="none" stroke="${color}" stroke-width="0.5" opacity="0.3"/>
+            </pattern>
+          </defs>
+        `;
+
+        let iconSVG = `<rect x="10" y="10" width="180" height="180" fill="url(#grid)" rx="90" opacity="0.5"/>`;
+        iconSVG += `<circle cx="100" cy="100" r="90" stroke-width="3"/>`;
+        iconSVG += `<circle cx="100" cy="100" r="80" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+
+        // Bussola centrale (Rosa dei Venti) procedurale
+        const style = seed % 3;
+        if(style === 0) {
+            // Classica
+            iconSVG += `<polygon points="100 20, 115 100, 100 180, 85 100" fill="none" stroke-width="2"/>`;
+            iconSVG += `<polygon points="20 100, 100 115, 180 100, 100 85" fill="none" stroke-width="2"/>`;
+            iconSVG += `<circle cx="100" cy="100" r="10" fill="${color}" opacity="0.6"/>`;
+        } else if (style === 1) {
+            // Runica/Esoterica
+            iconSVG += `<path d="M100 30 L100 170 M30 100 L170 100" stroke-width="2"/>`;
+            iconSVG += `<path d="M50 50 L150 150 M50 150 L150 50" stroke-width="1.5" opacity="0.7"/>`;
+            iconSVG += `<circle cx="100" cy="100" r="25" stroke-width="2"/>`;
+            iconSVG += `<polygon points="100 75, 125 100, 100 125, 75 100" stroke-width="2"/>`;
+        } else {
+            // Mappa del tesoro
+            iconSVG += `<path d="M40 160 Q80 120 120 160 T160 40" stroke-width="3" stroke-dasharray="6 6"/>`;
+            iconSVG += `<path d="M150 30 L170 50 M170 30 L150 50" stroke-width="4"/>`; // La X segna il punto
+        }
+
+        // Elementi topografici casuali (Montagne, Foreste)
+        for (let i = 0; i < 4 + Math.floor(rand() * 4); i++) {
+            const px = 40 + rand() * 120;
+            const py = 40 + rand() * 120;
+            if(rand() > 0.5) {
+                iconSVG += `<path d="M${px} ${py} L${px+10} ${py-15} L${px+20} ${py}" stroke-width="1.5"/>`; // Montagna
+            } else {
+                iconSVG += `<circle cx="${px}" cy="${py}" r="5" stroke-width="1.5"/>`; // Albero
+                iconSVG += `<line x1="${px}" y1="${py+5}" x2="${px}" y2="${py+12}" stroke-width="1.5"/>`;
+            }
+        }
+
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" aria-label="Mappa" role="img">
+            ${defs}
+            <g fill="none" stroke="${color}" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+              ${iconSVG}
+            </g>
+          </svg>
+        `.trim();
+
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function pulisciTestoDaHTML(testoSporco) {
+        let div = document.createElement("div");
+        div.innerHTML = testoSporco;
+        return div.textContent || div.innerText || "";
+    }
+
+    function generaMappa() {
+        // Grammatica: adatta i finali se serve. Esempio semplificato.
+        const luogo = scegliCasuale(luoghi);
+        const stato = scegliCasuale(stati);
+        let titoloFinale = `${luogo} ${stato}`;
+        
+        // Correzione grammaticale rapida (es. "La Caverna" + "Sommerso" -> "Sommersa")
+        if (luogo.endsWith("a") && stato.endsWith("o")) { titoloFinale = `${luogo} ${stato.slice(0, -1)}a`; }
+        if (luogo.endsWith("e") && stato.endsWith("o")) { titoloFinale = `${luogo} ${stato.slice(0, -1)}e`; }
+
+        const ostacolo = scegliCasuale(ostacoli);
+        const sorpresa = scegliCasuale(sorprese);
+
+        const testoCompleto = `Hai trovato "<strong>${titoloFinale}</strong>". <br><br><strong>Ambiente:</strong> ${ostacolo} <br><strong>Punto d'Interesse:</strong> ${sorpresa}`;
+        
+        document.getElementById('risultato').innerHTML = testoCompleto;
+
+        const testoPulito = pulisciTestoDaHTML(testoCompleto);
+        const seed = `${titoloFinale}|${ostacolo}|${sorpresa}`;
+        const svgDataUri = buildMapSVG(luogo, stato, seed);
+        const fileName = `mappa-${luogo.toLowerCase().replace(/[' ]/g, '')}.svg`;
+        
+        document.getElementById('areaBottoneCopiaPrincipale').innerHTML = `
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="bottoneCopiaPrincipale" class="copia-btn">
+                    <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    Copia Appunti
+                </button>
+                <a href="${svgDataUri}" download="${fileName}" class="copia-btn" style="text-decoration: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Scarica Mappa
+                </a>
+            </div>
+        `;
+
+        document.getElementById('bottoneCopiaPrincipale').addEventListener('click', function() {
+            copiaTesto(testoPulito);
+        });
+
+        const sezioneSigillo = document.getElementById('sezioneSigillo');
+        const imgElement = document.getElementById('immagineGenerata');
+
+        imgElement.src = svgDataUri;
+        sezioneSigillo.style.display = "block";
+
+        aggiungiAStorico(testoCompleto, luogo, stato, seed);
+    }
+
+    function aggiungiAStorico(nuovoTesto, luogo, stato, seed) {
+        storicoTomi.unshift({ testo: nuovoTesto, luogo: luogo, stato: stato, seed: seed });
+        if (storicoTomi.length > 4) { storicoTomi.pop(); }
+        aggiornaInterfacciaStorico();
+    }
+
+    function aggiornaInterfacciaStorico() {
+        const sezioneStorico = document.getElementById('sezioneStorico');
+        const storicoLista = document.getElementById('storicoLista');
+
+        storicoLista.innerHTML = "";
+
+        if (storicoTomi.length > 1) {
+            sezioneStorico.style.display = "block";
+
+            for (let i = 1; i < storicoTomi.length; i++) {
+                const data = storicoTomi[i];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'storico-item';
+                
+                const miniImg = buildMapSVG(data.luogo, data.stato, data.seed);
+                const testoSenzaTag = pulisciTestoDaHTML(data.testo);
+
+                itemDiv.innerHTML = `
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
+                        <img src="${miniImg}" style="width: 32px; height: 32px; background: radial-gradient(circle, #f7f0e2 0%, #eadcc1 70%, #ddc8a3 100%); border-radius: 50%; border: 1px solid #8b5a2b; padding: 2px;">
+                        <div style="flex: 1; font-size: 0.9rem;">${data.testo}</div>
+                    </div>
+                    <button class="copia-btn btn-storico-copia" style="float:right; margin-top:5px; padding: 2px 8px;">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copia
+                    </button>
+                    <div style="clear:both;"></div>
+                `;
+                
+                const btn = itemDiv.querySelector('.btn-storico-copia');
+                btn.addEventListener('click', function() { copiaTesto(testoSenzaTag); });
+
+                storicoLista.appendChild(itemDiv);
+            }
+        } else {
+            sezioneStorico.style.display = "none";
+        }
+    }
+
+    function copiaTesto(testo) {
+        navigator.clipboard.writeText(testo).then(() => {
+            alert("Appunti della mappa copiati! Pronti da incollare.");
+        }).catch(() => {
+            alert("Copia non riuscita su questo browser.");
+        });
+    }
+    </script>
+</body>
+</html>
