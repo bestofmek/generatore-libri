@@ -16,35 +16,95 @@
       --accent-2: #5a3a1f;
       --shadow: 0 18px 40px rgba(0,0,0,0.12);
     }
+    
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, rgba(139,90,43,0.08), transparent 40%), var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.5; }
+    
+    /* Blocco scroll su Desktop e centratura verticale */
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      background: radial-gradient(circle at top, rgba(139,90,43,0.08), transparent 40%), var(--bg); 
+      color: var(--ink); 
+      font-family: Georgia, "Times New Roman", serif; 
+      line-height: 1.4; 
+      height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      overflow: hidden; 
+    }
+    
     a { color: inherit; text-decoration: none; }
-    .page { width: min(1100px, calc(100% - 32px)); margin: 24px auto; background: var(--paper); border: 2px solid var(--line); border-radius: 0; box-shadow: var(--shadow); overflow: hidden; }
-    .hero { padding: 48px 28px 30px; text-align: center; background: radial-gradient(circle at top, rgba(139,90,43,0.10), transparent 36%), linear-gradient(180deg, #fbf6eb 0%, #f3e7cf 100%); border-bottom: 1px solid rgba(139,90,43,0.18); }
-    .sigil { width: 92px; height: 92px; border: 2px solid var(--accent); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 14px; font-size: 2rem; color: var(--accent); background: rgba(255,255,255,0.35); }
-    h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.4rem); text-transform: uppercase; letter-spacing: 1px; color: var(--accent); }
-    .subtitle { margin: 12px auto 0; max-width: 720px; color: var(--muted); font-size: 1.05rem; }
-    .nav { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 20px 18px 0; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(90,58,31,0.22); background: #fff9ef; color: var(--accent-2); font-size: 0.95rem; box-shadow: 0 6px 16px rgba(0,0,0,0.06); transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,0.10); background: #fff2da; }
+    
+    .page { 
+      width: min(1100px, 96vw); 
+      max-height: 96vh; 
+      background: var(--paper); 
+      border: 2px solid var(--line); 
+      box-shadow: var(--shadow); 
+      display: flex; 
+      flex-direction: column; 
+      overflow-y: auto; 
+    }
+    
+    .hero { 
+      padding: 24px 20px 20px; 
+      text-align: center; 
+      background: radial-gradient(circle at top, rgba(139,90,43,0.10), transparent 36%), linear-gradient(180deg, #fbf6eb 0%, #f3e7cf 100%); 
+      border-bottom: 1px solid rgba(139,90,43,0.18); 
+      flex-shrink: 0; 
+    }
+    
+    .sigil { 
+      width: 64px; height: 64px; border: 2px solid var(--accent); border-radius: 50%; 
+      display: grid; place-items: center; margin: 0 auto 10px; font-size: 1.5rem; 
+      color: var(--accent); background: rgba(255,255,255,0.35); 
+    }
+    
+    h1 { margin: 0; font-size: clamp(1.8rem, 3.5vw, 2.8rem); text-transform: uppercase; letter-spacing: 1px; color: var(--accent); }
+    .subtitle { margin: 8px auto 0; max-width: 720px; color: var(--muted); font-size: 1rem; }
+    .nav { display: flex; justify-content: center; padding: 16px 18px 0; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 24px; border-radius: 999px; border: 1px solid rgba(90,58,31,0.22); background: #fff9ef; color: var(--accent-2); font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: all .2s ease; text-transform: uppercase; letter-spacing: .5px; font-weight: bold; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.10); background: #fff2da; }
     .btn.primary { background: linear-gradient(180deg, #a06a36 0%, #8b5a2b 100%); color: #fffdf7; border-color: rgba(90,58,31,0.22); }
     .btn.primary:hover { background: linear-gradient(180deg, #ad7540 0%, #995f2c 100%); }
-    .section { padding: 40px 28px; }
-    .section-header { text-align: center; margin-bottom: 30px; }
-    .section h2 { margin: 0 0 10px; color: var(--accent); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; display: inline-block; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
-    .section p.desc { margin: 12px auto 0; color: var(--muted); max-width: 600px; text-align: center; }
-    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 10px; }
-    .card { border: 1px solid rgba(139,90,43,0.18); border-radius: 0; background: linear-gradient(180deg, #fffdf8 0%, #fbf4e6 100%); padding: 24px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
-    .card:hover { transform: translateY(-6px); box-shadow: 0 16px 30px rgba(0,0,0,0.12); background: linear-gradient(180deg, #fffaf1 0%, #f8eddc 100%); }
-    .card .icon { font-size: 2.5rem; color: var(--accent); margin-bottom: 16px; }
-    .card h3 { margin: 0 0 12px; color: var(--ink); font-size: 1.25rem; text-transform: uppercase; letter-spacing: .3px; }
-    .card p { font-size: 0.95rem; margin: 0 0 20px; color: var(--muted); line-height: 1.6; }
-    .card .actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
-    .card .btn { width: 100%; }
-    .mini-note { font-size: 0.82rem; line-height: 1.45; color: var(--muted); text-align: left; padding-left: 2px; }
+    
+    .section { padding: 24px 28px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+    .section-header { text-align: center; margin-bottom: 20px; }
+    .section h2 { margin: 0 0 6px; color: var(--accent); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; display: inline-block; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+    .section p.desc { margin: 8px auto 0; color: var(--muted); max-width: 600px; text-align: center; font-size: 0.95rem; }
+    
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 10px; }
+    
+    .card { border: 1px solid rgba(139,90,43,0.18); background: linear-gradient(180deg, #fffdf8 0%, #fbf4e6 100%); padding: 18px; display: flex; flex-direction: column; text-align: center; transition: all .2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.10); background: linear-gradient(180deg, #fffaf1 0%, #f8eddc 100%); z-index: 2; }
+    
+    .card > div:first-child { flex-grow: 1; display: flex; flex-direction: column; }
+    .card .icon { font-size: 2.2rem; color: var(--accent); margin-bottom: 12px; }
+    .card h3 { margin: 0 0 8px; color: var(--ink); font-size: 1.15rem; text-transform: uppercase; letter-spacing: .3px; }
+    .card p { font-size: 0.9rem; margin: 0 0 16px; color: var(--muted); line-height: 1.5; flex-grow: 1; }
+    
+    .card .actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+    .card .btn { width: 100%; padding: 8px 12px; font-size: 0.9rem; }
+    
+    .note-container { min-height: 38px; display: flex; flex-direction: column; justify-content: flex-start; gap: 2px; margin-top: 4px; }
+    .mini-note { font-size: 0.78rem; line-height: 1.3; color: var(--muted); text-align: left; padding-left: 2px; }
     .mini-note.premium { color: var(--accent-2); }
-    .small { font-size: 0.88rem; color: var(--muted); padding: 0 28px 26px; text-align: center; }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .page { width: min(1100px, calc(100% - 18px)); margin: 12px auto; } }
+    
+    .small { font-size: 0.82rem; color: var(--muted); padding: 12px 28px 20px; text-align: center; flex-shrink: 0; margin: 0; }
+
+    /* REGOLE PER SMARTPHONE */
+    @media (max-width: 900px) { 
+      html, body { height: auto; display: block; overflow: visible; background: var(--paper); }
+      .page { width: 100%; max-height: none; margin: 0; border: none; box-shadow: none; overflow: visible; }
+      .grid { grid-template-columns: 1fr; gap: 20px; } 
+      .hero { padding: 30px 16px 20px; }
+      .section { padding: 24px 16px; }
+      .card { min-height: auto; padding: 20px; }
+      .card:hover { transform: none; }
+      .note-container { min-height: auto; }
+    }
   </style>
 </head>
 <body>
@@ -54,9 +114,7 @@
       <h1>Arcane Generators</h1>
       <p class="subtitle">Una collezione di generatori fantasy pensata per il tavolo, per l'offline e per chi vuole portarsi dietro più idee in meno tempo.</p>
       <nav class="nav">
-        <a class="btn primary" href="tomi/generatore-tomi.html">Apri il Generatore di Tomi</a>
-        <a class="btn" href="#catalogo">Esplora il Catalogo</a>
-        <a class="btn" href="https://ko-fi.com/IL_TUO_KOFI" target="_blank" rel="noopener">Vai al Premium / Shop</a>
+        <a class="btn primary" href="https://ko-fi.com/IL_TUO_KOFI" target="_blank" rel="noopener">Vai allo Shop Premium</a>
       </nav>
     </header>
 
@@ -76,8 +134,10 @@
           <div class="actions">
             <a class="btn primary" href="tomi/generatore-tomi.html">Versione Free</a>
             <a class="btn" href="https://ko-fi.com/IL_TUO_KOFI" target="_blank" rel="noopener">Premium una tantum</a>
-            <div class="mini-note">Free: generazione rapida, descrizioni base, uso immediato.</div>
-            <div class="mini-note premium">Premium: PDF offline, più risultati, più varietà.</div>
+            <div class="note-container">
+              <div class="mini-note">Free: generazione rapida, descrizioni base.</div>
+              <div class="mini-note premium">Premium: PDF offline, più risultati, più varietà.</div>
+            </div>
           </div>
         </article>
 
@@ -90,8 +150,10 @@
           <div class="actions">
             <a class="btn primary" href="#">Versione Free</a>
             <a class="btn" href="https://ko-fi.com/IL_TUO_KOFI" target="_blank" rel="noopener">Premium una tantum</a>
-            <div class="mini-note">Free: mappe rapide, location essenziali, spunti di viaggio.</div>
-            <div class="mini-note premium">Premium: varianti avanzate, dettagli, export offline.</div>
+            <div class="note-container">
+              <div class="mini-note">Free: location essenziali, spunti di viaggio.</div>
+              <div class="mini-note premium">Premium: varianti avanzate, dettagli, export.</div>
+            </div>
           </div>
         </article>
 
@@ -104,8 +166,10 @@
           <div class="actions">
             <a class="btn primary" href="#">Versione Free</a>
             <a class="btn" href="https://ko-fi.com/IL_TUO_KOFI" target="_blank" rel="noopener">Premium una tantum</a>
-            <div class="mini-note">Free: reliquie base, effetto narrativo, rarità semplice.</div>
-            <div class="mini-note premium">Premium: leggende, attributi extra, varianti corrotte.</div>
+            <div class="note-container">
+              <div class="mini-note">Free: reliquie base, rarità semplice, usi diretti.</div>
+              <div class="mini-note premium">Premium: leggende, attributi extra, varianti.</div>
+            </div>
           </div>
         </article>
       </div>
