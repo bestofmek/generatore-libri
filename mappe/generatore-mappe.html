@@ -229,34 +229,15 @@
     </div>
 
     <script>
-    // 1. Luoghi (Mappe)
-    const luoghi = ["La Cripta", "L'Osservatorio", "Il Ponte", "Le Rovine", "L'Avamposto", "La Caverna", "Il Tempio", "L'Arena", "Le Fogne", "La Prigione", "La Forgia", "Il Giardino", "Il Mausoleo", "La Biblioteca", "Il Labirinto"];
-    
-    // 2. Aggettivi / Stati
-    const stati = ["Sommerso", "di Cristallo", "Infestato dalle Spore", "In Rovina", "Sospeso nel Vuoto", "di Ghiaccio Perenne", "Meccanico", "Corrotto", "in Fiamme", "Dimenticato", "Avvolto dalla Nebbia", "di Ossidiana", "Fossilizzato", "Illusionistico"];
-    
-    // 3. Ostacoli Ambientali / Pericoli
+    const luoghi = ["La Cripta", "L'Osservatorio", "Le Rovine"];
+    const stati = ["Sommerso", "di Cristallo", "Corrotto"];
     const ostacoli = [
         "L'intero pavimento è inclinato di 30 gradi e scivoloso.",
-        "Fiumi di magma cristallizzato frammentano la zona, emettendo calore letale.",
-        "Il soffitto è instabile e crolla se si producono suoni troppo forti.",
-        "Delle forti correnti di vento magico spingono verso il centro della mappa.",
-        "Il pavimento è coperto da mezzo metro d'acqua scura che nasconde fosse profonde.",
-        "L'aria è tossica, richiede di trattenere il respiro o filtrare l'aria ogni 2 minuti.",
-        "L'illuminazione cambia colore ciclicamente, invertendo la gravità per brevi istanti.",
-        "Sottili fili di ragnatela invisibili rischiano di paralizzare chi ci passa attraverso."
+        "L'illuminazione cambia colore ciclicamente, invertendo la gravità."
     ];
-    
-    // 4. Punti di Interesse / Sorprese
     const sorprese = [
-        "Al centro troneggia l'enorme scheletro di una creatura mai vista prima.",
-        "C'è un altare integro che sussurra deboli promesse di potere.",
-        "Una sfera perfetta di buio assoluto assorbe la luce in un angolo.",
-        "Migliaia di candele galleggiano nell'aria, bruciando senza consumarsi.",
-        "Un enorme ingranaggio dorato incastrato nel muro gira molto lentamente.",
-        "Un mercante pietrificato stringe ancora al petto un forziere intatto.",
-        "Un obelisco emette un debole ronzio che fa vibrare le armi di metallo.",
-        "Uno specchio d'acqua circolare riflette il cielo notturno, anche se siete al chiuso."
+        "Al centro troneggia l'enorme scheletro di una creatura mai vista.",
+        "Un obelisco emette un debole ronzio che fa vibrare le armi di metallo."
     ];
 
     let storicoTomi = [];
@@ -366,6 +347,7 @@
 
     function generaMappa() {
         // Grammatica: adatta i finali se serve. Esempio semplificato.
+        controllaPopup();
         const luogo = scegliCasuale(luoghi);
         const stato = scegliCasuale(stati);
         let titoloFinale = `${luogo} ${stato}`;
@@ -463,6 +445,37 @@
         }).catch(() => {
             alert("Copia non riuscita su questo browser.");
         });
+    }
+
+        // --- SISTEMA DI MONETIZZAZIONE (Popup dopo 5 click globali) ---
+    function controllaPopup() {
+        // Legge quante generazioni ha fatto l'utente in tutto l'hub
+        let count = parseInt(localStorage.getItem('arcane_gen_count')) || 0;
+        count++;
+        localStorage.setItem('arcane_gen_count', count);
+
+        // Appare solo esattamente al 5° click
+        if (count === 5) {
+            mostraPopupKofi();
+        }
+    }
+
+    function mostraPopupKofi() {
+        const overlay = document.createElement('div');
+        overlay.id = "kofi-overlay";
+        overlay.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; justify-content:center; align-items:center; backdrop-filter: blur(3px);";
+        
+        overlay.innerHTML = `
+            <div style="background:#fffdf7; padding:40px 30px; border:2px solid #8b5a2b; border-radius:8px; max-width:450px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.4); margin:20px;">
+                <h2 style="font-family:'Cinzel', serif; color:#5c1818; margin-top:0; font-size:1.8rem;">Stai trovando tesori incredibili! 🧙‍♂️</h2>
+                <p style="font-family:'Crimson Text', serif; font-size:1.15rem; line-height:1.5; color:#2c1a16;">Quello che stai usando è solo un "assaggio" gratuito, le combinazioni si esauriranno in fretta.</p>
+                <p style="font-family:'Crimson Text', serif; font-size:1.15rem; line-height:1.5; color:#2c1a16;">Se ti sta piacendo il progetto e vuoi darmi una mano a creare le versioni Premium illimitate (con migliaia di risultati), considerami per un caffè!</p>
+                <a href="https://ko-fi.com/bestofmek" target="_blank" style="display:inline-block; margin-top:15px; padding:12px 24px; background-color:#8b5a2b; color:#fffdf7; text-decoration:none; font-family:'Cinzel', serif; font-size:1.1rem; border-radius:4px; transition:0.3s; font-weight:bold;">☕ Offrimi un Caffè</a>
+                <br><br>
+                <button onclick="document.getElementById('kofi-overlay').remove()" style="background:transparent; border:none; color:#72563e; text-decoration:underline; cursor:pointer; font-family:'Crimson Text', serif; font-size:1rem; margin-top:10px;">Chiudi e continua a esplorare</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
     }
     </script>
 </body>

@@ -262,28 +262,16 @@
     </div>
 
     <script>
-    const tipi = ["La Spada", "L'Anello", "Il Calice", "La Corona", "La Maschera", "L'Amuleto", "Il Manto", "Il Pugnale", "L'Occhio", "Il Sigillo", "Il Bastone", "Lo Specchio", "Il Reliquiario", "L'Armatura", "La Lanterna", "La Clessidra"];
-    const aggettivi = ["Infranto", "Sussurrante", "d'Ossa", "di Cenere", "Senza Luce", "Insanguinato", "Cieco", "Cremisi", "di Ruggine", "di Vetro Nero", "Dimenticato", "Velato", "di Ghiaccio", "Profanato", "Silente"];
-    const exProprietari = ["dei Re Sepolti", "dell'Ultimo Eretico", "di un Santo Senza Nome", "del Falso Profeta", "delle Regine di Sale", "di un Angelo Caduto", "dei Discepoli Ciechi", "del Tiranno di Vetro", "dei Monaci del Sole Nero", "dell'Architetto Pazzo"];
-    
+        const tipi = ["La Spada", "L'Anello", "Il Calice"];
+    const aggettivi = ["Sussurrante", "di Vetro Nero", "Cremisi"];
+    const exProprietari = ["dei Re Sepolti", "del Falso Profeta", "dell'Architetto Pazzo"];
     const descrizioniVisive = [
       "Emana un debole bagliore malato se lasciato al buio.", 
-      "È perennemente gelido al tocco, a prescindere dal clima.", 
-      "Sembra vibrare impercettibilmente quando ci sono ombre vicine.", 
-      "La sua superficie riflette dettagli di un mondo che non è questo.", 
-      "Profuma lievemente di incenso stantio e sangue secco.", 
-      "È ricoperto da micro-crepe che sembrano spostarsi quando non lo guardi.", 
       "Le ombre proiettate da questo oggetto sembrano sempre leggermente sbagliate."
     ];
-    
     const maledizioni = [
       "Chi lo porta sogna in loop il proprio funerale ogni notte.", 
-      "Fa lentamente appassire la vegetazione e marcire il cibo nelle sue vicinanze.", 
-      "Rende il portatore paranoico e morbosamente geloso dell'oggetto stesso.", 
-      "Richiama istintivamente l'attenzione di spiriti e non-morti in un raggio di cento metri.", 
-      "Ogni volta che si usa la sua magia, il portatore perde per sempre un ricordo d'infanzia.", 
-      "Sussurra continuamente segreti terribili che non si riescono più a dimenticare.", 
-      "Il sangue del portatore si scurisce e non coagula più normalmente."
+      "Rende il portatore paranoico e morbosamente geloso dell'oggetto stesso."
     ];
 
     let storicoTomi = [];
@@ -473,6 +461,7 @@
     }
 
     function generaReliquia() {
+        controllaPopup();
         const tipo = scegliCasuale(tipi);
         const aggettivo = scegliCasuale(aggettivi);
         const exProprietario = scegliCasuale(exProprietari);
@@ -577,6 +566,37 @@
         }).catch(() => {
             alert("Copia non riuscita su questo browser.");
         });
+    }
+
+        // --- SISTEMA DI MONETIZZAZIONE (Popup dopo 5 click globali) ---
+    function controllaPopup() {
+        // Legge quante generazioni ha fatto l'utente in tutto l'hub
+        let count = parseInt(localStorage.getItem('arcane_gen_count')) || 0;
+        count++;
+        localStorage.setItem('arcane_gen_count', count);
+
+        // Appare solo esattamente al 5° click
+        if (count === 5) {
+            mostraPopupKofi();
+        }
+    }
+
+    function mostraPopupKofi() {
+        const overlay = document.createElement('div');
+        overlay.id = "kofi-overlay";
+        overlay.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; justify-content:center; align-items:center; backdrop-filter: blur(3px);";
+        
+        overlay.innerHTML = `
+            <div style="background:#fffdf7; padding:40px 30px; border:2px solid #8b5a2b; border-radius:8px; max-width:450px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.4); margin:20px;">
+                <h2 style="font-family:'Cinzel', serif; color:#5c1818; margin-top:0; font-size:1.8rem;">Stai trovando tesori incredibili! 🧙‍♂️</h2>
+                <p style="font-family:'Crimson Text', serif; font-size:1.15rem; line-height:1.5; color:#2c1a16;">Quello che stai usando è solo un "assaggio" gratuito, le combinazioni si esauriranno in fretta.</p>
+                <p style="font-family:'Crimson Text', serif; font-size:1.15rem; line-height:1.5; color:#2c1a16;">Se ti sta piacendo il progetto e vuoi darmi una mano a creare le versioni Premium illimitate (con migliaia di risultati), considerami per un caffè!</p>
+                <a href="https://ko-fi.com/bestofmek" target="_blank" style="display:inline-block; margin-top:15px; padding:12px 24px; background-color:#8b5a2b; color:#fffdf7; text-decoration:none; font-family:'Cinzel', serif; font-size:1.1rem; border-radius:4px; transition:0.3s; font-weight:bold;">☕ Offrimi un Caffè</a>
+                <br><br>
+                <button onclick="document.getElementById('kofi-overlay').remove()" style="background:transparent; border:none; color:#72563e; text-decoration:underline; cursor:pointer; font-family:'Crimson Text', serif; font-size:1rem; margin-top:10px;">Chiudi e continua a esplorare</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
     }
     </script>
 
