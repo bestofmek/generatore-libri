@@ -568,14 +568,24 @@
         });
     }
 
-        // --- SISTEMA DI MONETIZZAZIONE (Popup dopo 5 click globali) ---
+    // --- SISTEMA DI MONETIZZAZIONE (Popup dopo 5 click per sessione/ogni 2 ore) ---
     function controllaPopup() {
-        // Legge quante generazioni ha fatto l'utente in tutto l'hub
+        const ORA_ATTUALE = new Date().getTime();
+        const DUE_ORE_IN_MS = 2 * 60 * 60 * 1000; // 2 ore espresse in millisecondi
+        
         let count = parseInt(localStorage.getItem('arcane_gen_count')) || 0;
+        let tempoInizio = parseInt(localStorage.getItem('arcane_gen_time')) || 0;
+
+        // Se non c'è un tempo di inizio o sono passate più di 2 ore, resettiamo tutto
+        if (tempoInizio === 0 || (ORA_ATTUALE - tempoInizio) > DUE_ORE_IN_MS) {
+            count = 0;
+            localStorage.setItem('arcane_gen_time', ORA_ATTUALE);
+        }
+
         count++;
         localStorage.setItem('arcane_gen_count', count);
 
-        // Appare solo esattamente al 5° click
+        // Appare solo al 5° click della sessione corrente (2 ore)
         if (count === 5) {
             mostraPopupKofi();
         }
