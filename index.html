@@ -107,24 +107,42 @@
     }
 
     .footer-crediti {
-      margin-top: 15px;
-      padding-top: 10px;
+      margin-top: auto; /* Lo spinge sempre verso il fondo */
+      margin-bottom: 10px;
+      padding-top: 15px;
       font-size: 0.85rem;
       color: #8b5a2b;
       border-top: 1px solid rgba(139, 90, 43, 0.3);
       text-align: center;
+      flex-shrink: 0; /* Impedisce che venga schiacciato o sbordi */
     }
   </style>
 </head>
 <body>
   <main class="page">
     <header class="hero">
-      <div class="sigil">✦</div>
-      <h1>Arcane Generators</h1>
-      <p class="subtitle">Una collezione di generatori fantasy pensata per il tavolo, per l'offline e per chi vuole portarsi dietro più idee in meno tempo.</p>
-      <nav class="nav">
-        <a class="btn primary" href="https://ko-fi.com/bestofmek/shop" target="_blank" rel="noopener">Vai allo Shop Premium</a>
-      </nav>
+        <div class="hero">
+            <h1>Arcane Generators</h1>
+            <p>Non farti mai più trovare impreparato dai tuoi giocatori. Genera tomi misteriosi, reliquie perdute e mappe tattiche in pochi secondi, pronte da inserire nella tua campagna D&D o GDR.</p>
+            
+            <!-- NUOVO BLOCCO FUNNEL GRATUITO -->
+            <div style="background-color: #fffdf7; border: 2px dashed #8b5a2b; border-radius: 8px; padding: 25px; margin: 30px auto; max-width: 600px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <p style="font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; color: #5c1818;">
+                    Vuoi del materiale pronto per la sessione di stasera?
+                </p>
+                <p style="font-family: 'Crimson Text', serif; font-size: 1.1rem; margin-bottom: 20px;">
+                    Abbiamo preparato per te uno <strong>Starter Pack PDF</strong> con 12 idee premium (4 Tomi, 4 Reliquie, 4 Mappe) con sigilli vettoriali pronti da giocare.
+                </p>
+                <a href="https://ko-fi.com/s/dd70b4fb0e" target="_blank" 
+                   style="display: inline-block; background-color: #5c1818; color: #fdfaf3; padding: 12px 25px; font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: bold; text-decoration: none; border: 2px solid #2c1a16; border-radius: 5px; transition: all 0.3s ease;">
+                    🎁 SCARICA IL PDF GRATUITO
+                </a>
+                <p style="font-family: 'Crimson Text', serif; font-size: 0.85rem; margin-top: 10px; color: #8b5a2b; font-style: italic;">
+                    *Verrai reindirizzato al nostro shop. Inserisci 0€ per scaricarlo gratis.
+                </p>
+            </div>
+            <!-- FINE BLOCCO FUNNEL -->
+        </div>
     </header>
 
     <section class="section" id="catalogo">
